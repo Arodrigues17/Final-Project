@@ -1,0 +1,98 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "test.json",
+  "total_examples": 20,
+  "exact_match_accuracy": 0.0,
+  "execution_match_accuracy": 0.0,
+  "execution_success_rate": 0.0,
+  "error_rate": 1.0,
+  "average_time_per_query": 0.012564682960510254,
+  "total_time": 0.2512936592102051,
+  "per_database_accuracy": {
+    "cre_Students_Information_Systems": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "e_commerce": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "pilot_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "aan_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "boat_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 3
+    },
+    "book_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "vehicle_rent": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "government_shift": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "warehouse_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "bbc_channels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "headphone_store": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "advertising_agencies": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "address_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "movie_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    }
+  },
+  "has_gold_sql": true
+}

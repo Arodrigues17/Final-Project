@@ -1,0 +1,134 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 1034,
+  "exact_match_accuracy": 0.10541586073500966,
+  "execution_match_accuracy": 0.5686653771760155,
+  "execution_success_rate": 0.8597678916827853,
+  "error_rate": 0.06866537717601548,
+  "average_time_per_query": 0.4243460637688406,
+  "total_time": 438.7738299369812,
+  "per_database_accuracy": {
+    "concert_singer": {
+      "exact_match_accuracy": 0.044444444444444446,
+      "execution_match_accuracy": 0.4888888888888889,
+      "execution_success_rate": 0.7777777777777778,
+      "total_examples": 45
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.09523809523809523,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 0.8095238095238095,
+      "total_examples": 42
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.14130434782608695,
+      "execution_match_accuracy": 0.41304347826086957,
+      "execution_success_rate": 0.782608695652174,
+      "total_examples": 92
+    },
+    "flight_2": {
+      "exact_match_accuracy": 0.075,
+      "execution_match_accuracy": 0.725,
+      "execution_success_rate": 0.7625,
+      "total_examples": 80
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.07894736842105263,
+      "execution_match_accuracy": 0.6578947368421053,
+      "execution_success_rate": 0.9210526315789473,
+      "total_examples": 38
+    },
+    "cre_Doc_Template_Mgt": {
+      "exact_match_accuracy": 0.08333333333333333,
+      "execution_match_accuracy": 0.7857142857142857,
+      "execution_success_rate": 0.9047619047619048,
+      "total_examples": 84
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.16666666666666666,
+      "execution_match_accuracy": 0.7666666666666667,
+      "execution_success_rate": 0.9333333333333333,
+      "total_examples": 30
+    },
+    "museum_visit": {
+      "exact_match_accuracy": 0.16666666666666666,
+      "execution_match_accuracy": 0.6111111111111112,
+      "execution_success_rate": 0.9444444444444444,
+      "total_examples": 18
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.11290322580645161,
+      "execution_match_accuracy": 0.3709677419354839,
+      "execution_success_rate": 0.8225806451612904,
+      "total_examples": 62
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.25,
+      "execution_match_accuracy": 0.4375,
+      "execution_success_rate": 0.875,
+      "total_examples": 16
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.11538461538461539,
+      "execution_match_accuracy": 0.5512820512820513,
+      "execution_success_rate": 0.8717948717948718,
+      "total_examples": 78
+    },
+    "tvshow": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 0.8870967741935484,
+      "total_examples": 62
+    },
+    "poker_player": {
+      "exact_match_accuracy": 0.3,
+      "execution_match_accuracy": 0.9,
+      "execution_success_rate": 1.0,
+      "total_examples": 40
+    },
+    "voter_1": {
+      "exact_match_accuracy": 0.13333333333333333,
+      "execution_match_accuracy": 0.8,
+      "execution_success_rate": 0.9333333333333333,
+      "total_examples": 15
+    },
+    "world_1": {
+      "exact_match_accuracy": 0.041666666666666664,
+      "execution_match_accuracy": 0.375,
+      "execution_success_rate": 0.8833333333333333,
+      "total_examples": 120
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.3,
+      "execution_match_accuracy": 0.75,
+      "execution_success_rate": 0.9,
+      "total_examples": 40
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.07142857142857142,
+      "execution_match_accuracy": 0.44642857142857145,
+      "execution_success_rate": 0.8214285714285714,
+      "total_examples": 56
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5609756097560976,
+      "execution_success_rate": 0.8780487804878049,
+      "total_examples": 82
+    },
+    "singer": {
+      "exact_match_accuracy": 0.36666666666666664,
+      "execution_match_accuracy": 0.8,
+      "execution_success_rate": 0.8333333333333334,
+      "total_examples": 30
+    },
+    "real_estate_properties": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 1.0,
+      "total_examples": 4
+    }
+  },
+  "has_gold_sql": true
+}

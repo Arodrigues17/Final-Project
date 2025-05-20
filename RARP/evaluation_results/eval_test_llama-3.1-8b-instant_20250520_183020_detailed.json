@@ -1,0 +1,320 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "test.json",
+  "total_examples": 20,
+  "exact_match_accuracy": 0.1,
+  "execution_match_accuracy": 0.5,
+  "execution_success_rate": 0.9,
+  "error_rate": 0.05,
+  "average_time_per_query": 0.3282663464546204,
+  "total_time": 6.565326929092407,
+  "per_database_accuracy": {
+    "cre_Students_Information_Systems": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "e_commerce": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 1.0,
+      "total_examples": 2
+    },
+    "pilot_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "aan_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "boat_1": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.6666666666666666,
+      "execution_success_rate": 1.0,
+      "total_examples": 3
+    },
+    "book_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "vehicle_rent": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "government_shift": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 2
+    },
+    "warehouse_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.5,
+      "total_examples": 2
+    },
+    "bbc_channels": {
+      "exact_match_accuracy": 0.5,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 2
+    },
+    "headphone_store": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "advertising_agencies": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "address_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "total_examples": 1
+    },
+    "movie_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    }
+  },
+  "results": [
+    {
+      "db_id": "cre_Students_Information_Systems",
+      "question": "What are the address details and biographical information of each student?",
+      "gold_sql": "SELECT T1.address_details ,  T3.bio_data FROM Addresses AS T1 JOIN Students_Addresses AS T2 ON T1.address_id  =  T2.address_id JOIN Students AS T3 ON T2.student_id  =  T3.student_id",
+      "generated_sql": "SELECT \n  s.student_id,\n  s.bio_data,\n  s.student_details,\n  a.address_details\nFROM \n  Students s\n  LEFT JOIN Students_Addresses sa ON s.student_id = sa.student_id\n  LEFT JOIN Addresses a ON sa.address_id = a.address_id;",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.3416926860809326,
+      "error": null
+    },
+    {
+      "db_id": "e_commerce",
+      "question": "What is the product average price?",
+      "gold_sql": "SELECT avg(product_price) FROM Products",
+      "generated_sql": "SELECT AVG(T1.product_price) \nFROM Products T1",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.30425429344177246,
+      "error": null
+    },
+    {
+      "db_id": "pilot_1",
+      "question": "Count the number of different plane names across all pilots.",
+      "gold_sql": "SELECT count(DISTINCT plane_name) FROM pilotskills",
+      "generated_sql": "SELECT COUNT(DISTINCT T1.plane_name) \nFROM PilotSkills AS T1 \nJOIN Hangar AS T2 ON T1.plane_name = T2.plane_name",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.20645403861999512,
+      "error": null
+    },
+    {
+      "db_id": "aan_1",
+      "question": "How many reference papers does paper with id D12-1027 have?",
+      "gold_sql": "SELECT count(*) FROM Citation WHERE paper_id  =  \"D12-1027\"",
+      "generated_sql": "SELECT COUNT(*) \nFROM Paper p \nJOIN Author_list al ON p.paper_id = al.paper_id \nWHERE p.paper_id = 'D12-1027';",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.8154385089874268,
+      "error": null
+    },
+    {
+      "db_id": "boat_1",
+      "question": "What is the maximum rating for sailors?",
+      "gold_sql": "SELECT max(rating) FROM Sailors",
+      "generated_sql": "SELECT MAX(rating) \nFROM Sailors;",
+      "exact_match": true,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.23897814750671387,
+      "error": null
+    },
+    {
+      "db_id": "book_1",
+      "question": "What is the average sale price of books written by George Orwell?",
+      "gold_sql": "SELECT avg(saleprice) FROM Book AS T1 JOIN Author_book AS T2 ON T1.isbn  =  T2.isbn JOIN Author AS T3 ON T2.Author  =  T3.idAuthor WHERE T3.name  =  \"George Orwell\"",
+      "generated_sql": "SELECT AVG(T2.SalePrice) \nFROM Author_Book AS T1 \nJOIN Book AS T2 ON T1.ISBN = T2.ISBN \nJOIN Author AS T3 ON T1.Author = T3.idAuthor \nWHERE T3.Name = 'George Orwell';",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.33322930335998535,
+      "error": null
+    },
+    {
+      "db_id": "vehicle_rent",
+      "question": "What is the average age for customers with a membership credit above the average?",
+      "gold_sql": "SELECT avg(age) FROM customers WHERE membership_credit  >  (SELECT avg(membership_credit) FROM customers)",
+      "generated_sql": "SELECT AVG(C.age) \nFROM Customers C\nWHERE C.membership_credit > (\n  SELECT AVG(D.membership_credit) \n  FROM Discount D\n);",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.272139310836792,
+      "error": null
+    },
+    {
+      "db_id": "government_shift",
+      "question": "What is the list of channel details ordered alphabetically ?",
+      "gold_sql": "select channel_details from channels order by channel_details",
+      "generated_sql": "SELECT Channel_Details \nFROM Channels \nORDER BY Channel_Details ASC;",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.3425617218017578,
+      "error": null
+    },
+    {
+      "db_id": "warehouse_1",
+      "question": "What are the codes of boxes for which the value is greater than the value of any box that contains Rocks?",
+      "gold_sql": "SELECT code FROM boxes WHERE value  >  (SELECT min(value) FROM boxes WHERE CONTENTS  =  'Rocks')",
+      "generated_sql": "SELECT B1.Code\nFROM Boxes B1\nWHERE B1.Value > (\n  SELECT MAX(B2.Value)\n  FROM Boxes B2\n  WHERE B2.Contents = 'Rocks'\n);",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.32781457901000977,
+      "error": null
+    },
+    {
+      "db_id": "bbc_channels",
+      "question": "Find the number of channels that do not run any program.",
+      "gold_sql": "SELECT count(*) FROM channel WHERE channel_id NOT IN (SELECT channel_id FROM program)",
+      "generated_sql": "SELECT COUNT(*) \nFROM channel \nWHERE Channel_ID NOT IN (SELECT Channel_ID FROM program)",
+      "exact_match": true,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.28428053855895996,
+      "error": null
+    },
+    {
+      "db_id": "bbc_channels",
+      "question": "How many channels have the word 'bbc' in their internet link?",
+      "gold_sql": "SELECT count(*) FROM channel WHERE internet LIKE \"%bbc%\"",
+      "generated_sql": "SELECT COUNT(*) \nFROM channel \nWHERE Internet LIKE '%bbc%';",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.3046908378601074,
+      "error": null
+    },
+    {
+      "db_id": "government_shift",
+      "question": "Find all the details of the customers who have been involved in an interaction with status `` Stuck '' and service and channel detail `` bad '' .",
+      "gold_sql": "select t1.customer_details from customers as t1 join customer_interactions as t2 on t1.customer_id  =  t2.customer_id where t2.status_code  =  \"stuck\" and services_and_channels_details  =  \"bad\"",
+      "generated_sql": "SELECT C.Customer_ID, C.Customer_Details \nFROM Customers C \nJOIN Customers_and_Services CS ON C.Customer_ID = CS.Customer_ID \nJOIN Customer_Interactions CI ON CS.Customer_ID = CI.Customer_ID \nJOIN Integration_Platform IP ON CI.Customer_Interaction_ID = IP.Customer_Interaction_ID \nWHERE CI.Status_Code = 'Stuck' AND IP.Integration_Platform_Details LIKE '%bad%'",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.47361302375793457,
+      "error": null
+    },
+    {
+      "db_id": "boat_1",
+      "question": "Find the number of reservations for each boat with id greater than 50.",
+      "gold_sql": "SELECT bid ,  count(*) FROM Reserves GROUP BY bid HAVING bid  >  50",
+      "generated_sql": "SELECT \n    b.name, \n    COUNT(r.bid) AS num_reservations\nFROM \n    Boats b\nJOIN \n    Reserves r ON b.bid = r.bid\nWHERE \n    b.bid > 50\nGROUP BY \n    b.name;",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.3027210235595703,
+      "error": null
+    },
+    {
+      "db_id": "headphone_store",
+      "question": "Which store has the headphones in stock? Give me the store name and the total quantity.",
+      "gold_sql": "SELECT t1.name ,  sum(t2.quantity) FROM store AS t1 JOIN stock AS t2 ON t1.store_id  =  t2.store_id GROUP BY t2.store_id ORDER BY sum(t2.quantity) DESC LIMIT 1",
+      "generated_sql": "SELECT s.Name, SUM(st.Quantity) \nFROM store s \nJOIN stock st ON s.Store_ID = st.Store_ID \nJOIN headphone h ON st.Headphone_ID = h.Headphone_ID \nWHERE h.Model = 'headphones' \nGROUP BY s.Name",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.30641937255859375,
+      "error": null
+    },
+    {
+      "db_id": "advertising_agencies",
+      "question": "Show agency ids and details with at least 2 clients.",
+      "gold_sql": "SELECT T1.agency_id ,  T1.agency_details FROM Agencies AS T1 JOIN Clients AS T2 ON T1.agency_id  =  T2.agency_id GROUP BY T1.agency_id HAVING count(*)  >=  2",
+      "generated_sql": "SELECT A.agency_id, A.agency_details\nFROM Agencies A\nJOIN Clients C ON A.agency_id = C.agency_id\nGROUP BY A.agency_id\nHAVING COUNT(C.client_id) >= 2;",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.46120429039001465,
+      "error": null
+    },
+    {
+      "db_id": "e_commerce",
+      "question": "List the order date of the orders who are placed by customers with at least 2 payment methods.",
+      "gold_sql": "SELECT date_order_placed FROM Orders WHERE customer_id IN ( SELECT T1.customer_id FROM Customers AS T1 JOIN Customer_Payment_Methods AS T2 ON T1.customer_id  =  T2.customer_id GROUP BY T1.customer_id HAVING count(*)  >=  2 )",
+      "generated_sql": "SELECT T1.date_order_placed\nFROM Orders AS T1\nJOIN Customers AS T2 ON T1.customer_id = T2.customer_id\nJOIN Customer_Payment_Methods AS T3 ON T2.customer_id = T3.customer_id\nGROUP BY T1.date_order_placed\nHAVING COUNT(DISTINCT T3.payment_method_code) >= 2;",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 0.3711051940917969,
+      "error": null
+    },
+    {
+      "db_id": "address_1",
+      "question": "What is the distance between Boston and Newark?",
+      "gold_sql": "SELECT distance FROM Direct_distance AS T1 JOIN City AS T2 ON T1.city1_code  =  T2.city_code JOIN City AS T3 ON T1.city2_code  =  T3.city_code WHERE T2.city_name  =  \"Boston\" AND T3.city_name  =  \"Newark\"",
+      "generated_sql": "SELECT T1.distance \nFROM Direct_distance AS T1 \nINNER JOIN City AS T2 ON T1.city1_code = T2.city_code \nINNER JOIN City AS T3 ON T1.city2_code = T3.city_code \nWHERE T2.city_name = 'Boston' AND T3.city_name = 'Newark'",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.3038747310638428,
+      "error": null
+    },
+    {
+      "db_id": "warehouse_1",
+      "question": "What are the locations of warehouses in which boxes that contain Rocks and Scissors are kept?",
+      "gold_sql": "SELECT T2.location FROM boxes AS T1 JOIN warehouses AS T2 ON T1.warehouse  =  T2.code WHERE T1.contents  =  'Rocks' INTERSECT SELECT T2.location FROM boxes AS T1 JOIN warehouses AS T2 ON T1.warehouse  =  T2.code WHERE T1.contents  =  'Scissors'",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity"
+    },
+    {
+      "db_id": "boat_1",
+      "question": "What are the rating and average age for sailors who reserved red boats for each rating?",
+      "gold_sql": "SELECT T1.rating ,  avg(T1.age) FROM Sailors AS T1 JOIN Reserves AS T2 ON T1.sid  =  T2.sid JOIN Boats AS T3 ON T3.bid  =  T2.bid WHERE T3.color  =  'red' GROUP BY T1.rating",
+      "generated_sql": "SELECT S.rating, AVG(S.age) \nFROM Sailors S \nJOIN Reserves R ON S.sid = R.sid \nJOIN Boats B ON R.bid = B.bid \nWHERE B.color = 'red' \nGROUP BY S.rating;",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 0.27730631828308105,
+      "error": null
+    },
+    {
+      "db_id": "movie_2",
+      "question": "Find the number of movies whose rating is not null.",
+      "gold_sql": "SELECT count(*) ,  rating FROM movies WHERE rating != 'null' GROUP BY rating",
+      "generated_sql": "SELECT COUNT(Code) \nFROM Movies \nWHERE Rating IS NOT NULL;",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.2975490093231201,
+      "error": null
+    }
+  ],
+  "has_gold_sql": true
+}

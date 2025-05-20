@@ -1,0 +1,320 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "test.json",
+  "total_examples": 20,
+  "exact_match_accuracy": 0.0,
+  "execution_match_accuracy": 0.0,
+  "execution_success_rate": 0.0,
+  "error_rate": 1.0,
+  "average_time_per_query": 0.0006966829299926758,
+  "total_time": 0.013933658599853516,
+  "per_database_accuracy": {
+    "cre_Students_Information_Systems": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "e_commerce": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "pilot_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "aan_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "boat_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 3
+    },
+    "book_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "vehicle_rent": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "government_shift": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "warehouse_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "bbc_channels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 2
+    },
+    "headphone_store": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "advertising_agencies": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "address_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    },
+    "movie_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 1
+    }
+  },
+  "results": [
+    {
+      "db_id": "cre_Students_Information_Systems",
+      "question": "What are the address details and biographical information of each student?",
+      "gold_sql": "SELECT T1.address_details ,  T3.bio_data FROM Addresses AS T1 JOIN Students_Addresses AS T2 ON T1.address_id  =  T2.address_id JOIN Students AS T3 ON T2.student_id  =  T3.student_id",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0003714561462402344,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "e_commerce",
+      "question": "What is the product average price?",
+      "gold_sql": "SELECT avg(product_price) FROM Products",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00023412704467773438,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "pilot_1",
+      "question": "Count the number of different plane names across all pilots.",
+      "gold_sql": "SELECT count(DISTINCT plane_name) FROM pilotskills",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00020456314086914062,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "aan_1",
+      "question": "How many reference papers does paper with id D12-1027 have?",
+      "gold_sql": "SELECT count(*) FROM Citation WHERE paper_id  =  \"D12-1027\"",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002281665802001953,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "boat_1",
+      "question": "What is the maximum rating for sailors?",
+      "gold_sql": "SELECT max(rating) FROM Sailors",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002841949462890625,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "book_1",
+      "question": "What is the average sale price of books written by George Orwell?",
+      "gold_sql": "SELECT avg(saleprice) FROM Book AS T1 JOIN Author_book AS T2 ON T1.isbn  =  T2.isbn JOIN Author AS T3 ON T2.Author  =  T3.idAuthor WHERE T3.name  =  \"George Orwell\"",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00030803680419921875,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "vehicle_rent",
+      "question": "What is the average age for customers with a membership credit above the average?",
+      "gold_sql": "SELECT avg(age) FROM customers WHERE membership_credit  >  (SELECT avg(membership_credit) FROM customers)",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002849102020263672,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "government_shift",
+      "question": "What is the list of channel details ordered alphabetically ?",
+      "gold_sql": "select channel_details from channels order by channel_details",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00026416778564453125,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "warehouse_1",
+      "question": "What are the codes of boxes for which the value is greater than the value of any box that contains Rocks?",
+      "gold_sql": "SELECT code FROM boxes WHERE value  >  (SELECT min(value) FROM boxes WHERE CONTENTS  =  'Rocks')",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00022554397583007812,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "bbc_channels",
+      "question": "Find the number of channels that do not run any program.",
+      "gold_sql": "SELECT count(*) FROM channel WHERE channel_id NOT IN (SELECT channel_id FROM program)",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002269744873046875,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "bbc_channels",
+      "question": "How many channels have the word 'bbc' in their internet link?",
+      "gold_sql": "SELECT count(*) FROM channel WHERE internet LIKE \"%bbc%\"",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002639293670654297,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "government_shift",
+      "question": "Find all the details of the customers who have been involved in an interaction with status `` Stuck '' and service and channel detail `` bad '' .",
+      "gold_sql": "select t1.customer_details from customers as t1 join customer_interactions as t2 on t1.customer_id  =  t2.customer_id where t2.status_code  =  \"stuck\" and services_and_channels_details  =  \"bad\"",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00027060508728027344,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "boat_1",
+      "question": "Find the number of reservations for each boat with id greater than 50.",
+      "gold_sql": "SELECT bid ,  count(*) FROM Reserves GROUP BY bid HAVING bid  >  50",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002491474151611328,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "headphone_store",
+      "question": "Which store has the headphones in stock? Give me the store name and the total quantity.",
+      "gold_sql": "SELECT t1.name ,  sum(t2.quantity) FROM store AS t1 JOIN stock AS t2 ON t1.store_id  =  t2.store_id GROUP BY t2.store_id ORDER BY sum(t2.quantity) DESC LIMIT 1",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.004734516143798828,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "advertising_agencies",
+      "question": "Show agency ids and details with at least 2 clients.",
+      "gold_sql": "SELECT T1.agency_id ,  T1.agency_details FROM Agencies AS T1 JOIN Clients AS T2 ON T1.agency_id  =  T2.agency_id GROUP BY T1.agency_id HAVING count(*)  >=  2",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.00096893310546875,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "e_commerce",
+      "question": "List the order date of the orders who are placed by customers with at least 2 payment methods.",
+      "gold_sql": "SELECT date_order_placed FROM Orders WHERE customer_id IN ( SELECT T1.customer_id FROM Customers AS T1 JOIN Customer_Payment_Methods AS T2 ON T1.customer_id  =  T2.customer_id GROUP BY T1.customer_id HAVING count(*)  >=  2 )",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0004062652587890625,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "address_1",
+      "question": "What is the distance between Boston and Newark?",
+      "gold_sql": "SELECT distance FROM Direct_distance AS T1 JOIN City AS T2 ON T1.city1_code  =  T2.city_code JOIN City AS T3 ON T1.city2_code  =  T3.city_code WHERE T2.city_name  =  \"Boston\" AND T3.city_name  =  \"Newark\"",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0003268718719482422,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "warehouse_1",
+      "question": "What are the locations of warehouses in which boxes that contain Rocks and Scissors are kept?",
+      "gold_sql": "SELECT T2.location FROM boxes AS T1 JOIN warehouses AS T2 ON T1.warehouse  =  T2.code WHERE T1.contents  =  'Rocks' INTERSECT SELECT T2.location FROM boxes AS T1 JOIN warehouses AS T2 ON T1.warehouse  =  T2.code WHERE T1.contents  =  'Scissors'",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity"
+    },
+    {
+      "db_id": "boat_1",
+      "question": "What are the rating and average age for sailors who reserved red boats for each rating?",
+      "gold_sql": "SELECT T1.rating ,  avg(T1.age) FROM Sailors AS T1 JOIN Reserves AS T2 ON T1.sid  =  T2.sid JOIN Boats AS T3 ON T3.bid  =  T2.bid WHERE T3.color  =  'red' GROUP BY T1.rating",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0002319812774658203,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    },
+    {
+      "db_id": "movie_2",
+      "question": "Find the number of movies whose rating is not null.",
+      "gold_sql": "SELECT count(*) ,  rating FROM movies WHERE rating != 'null' GROUP BY rating",
+      "generated_sql": "ERROR: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0038492679595947266,
+      "error": "RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/comprehensive_evaluation.py\", line 126, in evaluate_query\n    rarp = RARP(db_id, model, tables_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RARP.__init__() takes from 2 to 3 positional arguments but 4 were given\n"
+    }
+  ],
+  "has_gold_sql": true
+}

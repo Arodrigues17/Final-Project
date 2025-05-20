@@ -1,0 +1,254 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "test.json",
+  "total_examples": 2147,
+  "exact_match_accuracy": 0.12855146716348392,
+  "execution_match_accuracy": 0.4578481602235678,
+  "execution_success_rate": 0.7144853283651607,
+  "error_rate": 0.0759198882161155,
+  "average_time_per_query": 0.32551192115726835,
+  "total_time": 698.8740947246552,
+  "per_database_accuracy": {
+    "soccer_3": {
+      "exact_match_accuracy": 0.225,
+      "execution_match_accuracy": 0.775,
+      "execution_success_rate": 0.875,
+      "total_examples": 40
+    },
+    "e_commerce": {
+      "exact_match_accuracy": 0.1,
+      "execution_match_accuracy": 0.4875,
+      "execution_success_rate": 0.8875,
+      "total_examples": 80
+    },
+    "bbc_channels": {
+      "exact_match_accuracy": 0.25,
+      "execution_match_accuracy": 0.8125,
+      "execution_success_rate": 0.9375,
+      "total_examples": 16
+    },
+    "tv_shows": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 15
+    },
+    "vehicle_driver": {
+      "exact_match_accuracy": 0.09523809523809523,
+      "execution_match_accuracy": 0.7380952380952381,
+      "execution_success_rate": 0.9523809523809523,
+      "total_examples": 42
+    },
+    "online_exams": {
+      "exact_match_accuracy": 0.125,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 40
+    },
+    "customers_and_orders": {
+      "exact_match_accuracy": 0.1951219512195122,
+      "execution_match_accuracy": 0.8170731707317073,
+      "execution_success_rate": 0.9390243902439024,
+      "total_examples": 82
+    },
+    "region_building": {
+      "exact_match_accuracy": 0.375,
+      "execution_match_accuracy": 0.675,
+      "execution_success_rate": 0.875,
+      "total_examples": 40
+    },
+    "government_shift": {
+      "exact_match_accuracy": 0.1,
+      "execution_match_accuracy": 0.375,
+      "execution_success_rate": 1.0,
+      "total_examples": 40
+    },
+    "vehicle_rent": {
+      "exact_match_accuracy": 0.22727272727272727,
+      "execution_match_accuracy": 0.75,
+      "execution_success_rate": 0.9090909090909091,
+      "total_examples": 44
+    },
+    "cre_Students_Information_Systems": {
+      "exact_match_accuracy": 0.02631578947368421,
+      "execution_match_accuracy": 0.32894736842105265,
+      "execution_success_rate": 0.8421052631578947,
+      "total_examples": 76
+    },
+    "book_1": {
+      "exact_match_accuracy": 0.1282051282051282,
+      "execution_match_accuracy": 0.6538461538461539,
+      "execution_success_rate": 0.8333333333333334,
+      "total_examples": 78
+    },
+    "book_review": {
+      "exact_match_accuracy": 0.38095238095238093,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 21
+    },
+    "restaurant_bills": {
+      "exact_match_accuracy": 0.26666666666666666,
+      "execution_match_accuracy": 0.7333333333333333,
+      "execution_success_rate": 0.9333333333333333,
+      "total_examples": 30
+    },
+    "club_leader": {
+      "exact_match_accuracy": 0.17647058823529413,
+      "execution_match_accuracy": 0.6470588235294118,
+      "execution_success_rate": 0.9411764705882353,
+      "total_examples": 17
+    },
+    "cre_Doc_and_collections": {
+      "exact_match_accuracy": 0.075,
+      "execution_match_accuracy": 0.2875,
+      "execution_success_rate": 0.7625,
+      "total_examples": 80
+    },
+    "sing_contest": {
+      "exact_match_accuracy": 0.1,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 20
+    },
+    "address_1": {
+      "exact_match_accuracy": 0.0625,
+      "execution_match_accuracy": 0.575,
+      "execution_success_rate": 0.95,
+      "total_examples": 80
+    },
+    "boat_1": {
+      "exact_match_accuracy": 0.16666666666666666,
+      "execution_match_accuracy": 0.5512820512820513,
+      "execution_success_rate": 0.8461538461538461,
+      "total_examples": 78
+    },
+    "headphone_store": {
+      "exact_match_accuracy": 0.1590909090909091,
+      "execution_match_accuracy": 0.5681818181818182,
+      "execution_success_rate": 0.8409090909090909,
+      "total_examples": 44
+    },
+    "aan_1": {
+      "exact_match_accuracy": 0.06666666666666667,
+      "execution_match_accuracy": 0.4222222222222222,
+      "execution_success_rate": 0.8222222222222222,
+      "total_examples": 90
+    },
+    "conference": {
+      "exact_match_accuracy": 0.18181818181818182,
+      "execution_match_accuracy": 0.6590909090909091,
+      "execution_success_rate": 0.8181818181818182,
+      "total_examples": 44
+    },
+    "pilot_1": {
+      "exact_match_accuracy": 0.15853658536585366,
+      "execution_match_accuracy": 0.4878048780487805,
+      "execution_success_rate": 0.9024390243902439,
+      "total_examples": 82
+    },
+    "district_spokesman": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5238095238095238,
+      "execution_success_rate": 0.7619047619047619,
+      "total_examples": 21
+    },
+    "art_1": {
+      "exact_match_accuracy": 0.043859649122807015,
+      "execution_match_accuracy": 0.30701754385964913,
+      "execution_success_rate": 0.8070175438596491,
+      "total_examples": 114
+    },
+    "car_road_race": {
+      "exact_match_accuracy": 0.22727272727272727,
+      "execution_match_accuracy": 0.6818181818181818,
+      "execution_success_rate": 0.8636363636363636,
+      "total_examples": 44
+    },
+    "country_language": {
+      "exact_match_accuracy": 0.25,
+      "execution_match_accuracy": 0.825,
+      "execution_success_rate": 0.95,
+      "total_examples": 40
+    },
+    "real_estate_rentals": {
+      "exact_match_accuracy": 0.08333333333333333,
+      "execution_match_accuracy": 0.4305555555555556,
+      "execution_success_rate": 0.8055555555555556,
+      "total_examples": 72
+    },
+    "bike_racing": {
+      "exact_match_accuracy": 0.17647058823529413,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 17
+    },
+    "bakery_1": {
+      "exact_match_accuracy": 0.028846153846153848,
+      "execution_match_accuracy": 0.3173076923076923,
+      "execution_success_rate": 0.8269230769230769,
+      "total_examples": 104
+    },
+    "car_racing": {
+      "exact_match_accuracy": 0.16,
+      "execution_match_accuracy": 0.54,
+      "execution_success_rate": 0.78,
+      "total_examples": 50
+    },
+    "institution_sports": {
+      "exact_match_accuracy": 0.25,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 40
+    },
+    "warehouse_1": {
+      "exact_match_accuracy": 0.08974358974358974,
+      "execution_match_accuracy": 0.46153846153846156,
+      "execution_success_rate": 0.7692307692307693,
+      "total_examples": 78
+    },
+    "university_rank": {
+      "exact_match_accuracy": 0.022727272727272728,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 44
+    },
+    "movie_2": {
+      "exact_match_accuracy": 0.15384615384615385,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 52
+    },
+    "planet_1": {
+      "exact_match_accuracy": 0.05263157894736842,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 76
+    },
+    "video_game": {
+      "exact_match_accuracy": 0.16666666666666666,
+      "execution_match_accuracy": 0.8095238095238095,
+      "execution_success_rate": 0.8809523809523809,
+      "total_examples": 42
+    },
+    "book_press": {
+      "exact_match_accuracy": 0.1590909090909091,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "total_examples": 44
+    },
+    "cre_Doc_Workflow": {
+      "exact_match_accuracy": 0.125,
+      "execution_match_accuracy": 0.85,
+      "execution_success_rate": 0.925,
+      "total_examples": 40
+    },
+    "advertising_agencies": {
+      "exact_match_accuracy": 0.12222222222222222,
+      "execution_match_accuracy": 0.7777777777777778,
+      "execution_success_rate": 0.9222222222222223,
+      "total_examples": 90
+    }
+  },
+  "has_gold_sql": true
+}
