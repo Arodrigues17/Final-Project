@@ -21,12 +21,6 @@ def get_groq_api_key():
         print("Using primary GROQ_API_KEY")
         return api_key
     
-    # Try backup API key
-    api_key = os.environ.get("GROQ_API_KEY_backup")
-    if api_key:
-        print("Using backup GROQ_API_KEY_backup")
-        return api_key
-    
     # Try paid API key
     api_key = os.environ.get("GROQ_API_KEY_paid")
     if api_key:
@@ -34,7 +28,7 @@ def get_groq_api_key():
         return api_key
     
     # If no keys are available, raise an error
-    raise ValueError("No Groq API key found in environment variables. Please set GROQ_API_KEY, GROQ_API_KEY_backup, or GROQ_API_KEY_paid.")
+    raise ValueError("No Groq API key found in environment variables. Please set GROQ_API_KEY or GROQ_API_KEY_paid.")
 
 # Initialize Groq client with the first available API key
 client = Groq(api_key=get_groq_api_key())

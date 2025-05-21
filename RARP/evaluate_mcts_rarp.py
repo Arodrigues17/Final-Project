@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Evaluation script for MCTS-RARP on the Spider dataset
-Extends the comprehensive_evaluation.py script to support MCTS-based SQL generation
+Comprehensive evaluation script for MCTS-RARP on the Spider dataset
+Supports both standard RARP and MCTS-enhanced RARP
 """
 
 import os
@@ -19,9 +19,9 @@ import multiprocessing
 import re
 from datetime import datetime
 
-# Import our RARP and MCTSRARP implementations
+# Import our RARP and MCTS-RARP implementations
 from working_rarp import RARP, DatabaseSchema
-from mcts_rarp import MCTSRARP
+from mcts_rarp import MCTSRARP, evaluate_query_mcts
 
 # Set paths
 SPIDER_DIR = Path("../datasets/spider")
@@ -30,6 +30,31 @@ RESULTS_DIR = Path("./evaluation_results")
 
 # Create results directory if it doesn't exist
 RESULTS_DIR.mkdir(exist_ok=True)
+
+def load_few_shot_examples(num_examples=3, seed=42):
+    """Load a few examples from the training set for few-shot learning"""
+    # Set random seed for reproducibility
+    random.seed(seed)
+    
+    # Load training dataset
+    try:
+        with open(SPIDER_DIR / "train_spider.json", 'r') as f:
+            train_dataset = json.load(f)
+    except FileNotFoundError:
+        print("Warning: Training dataset file not found. No few-shot examples will be used.")
+        return []
+    
+    # Sample a few examples
+    if num_examples <= len(train_dataset):
+        few_shot_examples = random.sample(train_dataset, num_examples)
+    else:
+        few_shot_examples = train_dataset
+    
+    print(f"Selected {len(few_shot_examples)} few-shot examples from training set:")
+    for i, example in enumerate(few_shot_examples):
+        print(f"Example {i+1}: {example['question']} -> {example['query'][:80]}...")
+    
+    return few_shot_examples
 
 def normalize_sql(sql: str) -> str:
     """Normalize SQL for comparison"""
@@ -73,22 +98,8 @@ def results_match(results1: List[Tuple], results2: List[Tuple]) -> bool:
     
     return set1 == set2
 
-def evaluate_query(example: Dict[str, Any], model: str, include_samples: bool, few_shot_examples: List[Dict[str, Any]] = None, use_mcts: bool = True, mcts_iterations: int = 25, debug: bool = False) -> Dict[str, Any]:
-    """
-    Evaluate a single query using MCTSRARP if requested
-    
-    Args:
-        example: The example to evaluate
-        model: The model to use
-        include_samples: Whether to include sample data
-        few_shot_examples: Examples for few-shot learning
-        use_mcts: Whether to use MCTS
-        mcts_iterations: Number of MCTS iterations
-        debug: Print debug information
-        
-    Returns:
-        Evaluation results
-    """
+def evaluate_query(example: Dict[str, Any], model: str, include_samples: bool, few_shot_examples: List[Dict[str, Any]] = None, use_mcts: bool = True, mcts_iterations: int = 20, debug: bool = False) -> Dict[str, Any]:
+    """Evaluate a single query using MCTS-RARP if requested"""
     start_time = time.time()
     query = example["question"]
     db_id = example["db_id"]
@@ -137,79 +148,101 @@ def evaluate_query(example: Dict[str, Any], model: str, include_samples: bool, f
             }
         
         # Initialize appropriate RARP version
-        if use_mcts:
-            # For test database, we need to use a different tables.json file
-            if test_db_dir.exists():
-                tables_path = str(SPIDER_DIR / "test_tables.json")
-                rarp = MCTSRARP(db_id, model, tables_path=tables_path, mcts_iterations=mcts_iterations)
-            else:
-                rarp = MCTSRARP(db_id, model, mcts_iterations=mcts_iterations)
+        tables_path = None
+        if test_db_dir.exists():
+            tables_path = str(SPIDER_DIR / "test_tables.json")
             
+        try:
+            if use_mcts:
+                # Use MCTS-RARP
+                rarp = MCTSRARP(db_id, model, tables_path=tables_path, few_shot_examples=few_shot_examples, mcts_iterations=mcts_iterations)
+            else:
+                # Use regular RARP or FewShotRARP
+                if few_shot_examples and len(few_shot_examples) > 0:
+                    from few_shot_rarp import FewShotRARP
+                    rarp = FewShotRARP(db_id, model, tables_path, few_shot_examples)
+                else:
+                    rarp = RARP(db_id, model, tables_path)
+                
+            # Debug output if requested
             if debug:
-                print(f"\nQuery: {query}")
-                print(f"Database: {db_id}")
-                print(f"Is complex: {rarp._is_complex_query(query)}")
-        else:
-            # Use regular RARP
-            if test_db_dir.exists():
-                tables_path = str(SPIDER_DIR / "test_tables.json")
-                rarp = RARP(db_id, model, tables_path)
+                # For MCTS version, check if query is complex
+                if use_mcts:
+                    is_complex = rarp._is_complex_query(query)
+                    print(f"\nQuery: {query}")
+                    print(f"Is complex: {is_complex}")
+            
+            # Generate SQL
+            result = rarp.generate_sql(query, include_samples)
+            generated_sql = result["sql"]
+            method = result.get("method", "direct")
+            
+            # More debug output
+            if debug:
+                if use_mcts:
+                    print(f"Direct SQL: {result.get('direct_sql', 'N/A')}")
+                    print(f"MCTS SQL: {result.get('mcts_sql', 'N/A')}")
+                    print(f"Method used: {method}")
+            
+            # Default values for matching metrics
+            exact_match = False
+            exec_match = False
+            
+            # Check matches only if gold SQL is available
+            if has_gold_sql:
+                # Normalize SQL for comparison
+                normalized_generated = normalize_sql(generated_sql)
+                normalized_gold = normalize_sql(gold_sql)
+                
+                # Check for exact match
+                exact_match = normalized_generated == normalized_gold
+                
+                # Try to execute the generated SQL
+                gen_exec_success, gen_results = get_execution_result(generated_sql, str(db_path))
+                
+                # Try to execute the gold SQL
+                gold_exec_success, gold_results = get_execution_result(gold_sql, str(db_path))
+                
+                # Check if both executed successfully and have matching results
+                if gen_exec_success and gold_exec_success:
+                    exec_match = results_match(gen_results, gold_results)
+                    
+                    if debug:
+                        print(f"Execution match: {exec_match}")
+                        if not exec_match:
+                            print(f"Generated results: {gen_results[:3]} (showing up to 3)")
+                            print(f"Gold results: {gold_results[:3]} (showing up to 3)")
             else:
-                rarp = RARP(db_id, model)
-        
-        # Generate SQL
-        result = rarp.generate_sql(query, include_samples)
-        generated_sql = result["sql"]
-        method = result.get("method", "direct")
-        
-        if debug:
-            print(f"Method used: {method}")
-            print(f"Generated SQL: {generated_sql[:100]}{'...' if len(generated_sql) > 100 else ''}")
-        
-        # Default values for matching metrics
-        exact_match = False
-        exec_match = False
-        
-        # Check matches only if gold SQL is available
-        if has_gold_sql:
-            # Normalize SQL for comparison
-            normalized_generated = normalize_sql(generated_sql)
-            normalized_gold = normalize_sql(gold_sql)
+                # If no gold SQL, just check if the generated SQL executes
+                gen_exec_success, _ = get_execution_result(generated_sql, str(db_path))
             
-            # Check for exact match
-            exact_match = normalized_generated == normalized_gold
+            time_taken = time.time() - start_time
             
-            # Try to execute the generated SQL
-            gen_exec_success, gen_results = get_execution_result(generated_sql, str(db_path))
+            return {
+                "db_id": db_id,
+                "question": query,
+                "gold_sql": gold_sql if has_gold_sql else "N/A",
+                "generated_sql": generated_sql,
+                "method": method,
+                "exact_match": exact_match,
+                "exec_match": exec_match,
+                "execution_success": gen_exec_success,
+                "time_taken": time_taken,
+                "error": None,
+                "mcts_used": use_mcts and method == "mcts"
+            }
+        except Exception as e:
+            if debug:
+                print(f"Error in RARP initialization or SQL generation: {str(e)}")
+            raise e
             
-            # Try to execute the gold SQL
-            gold_exec_success, gold_results = get_execution_result(gold_sql, str(db_path))
-            
-            # Check if both executed successfully and have matching results
-            if gen_exec_success and gold_exec_success:
-                exec_match = results_match(gen_results, gold_results)
-        else:
-            # If no gold SQL, just check if the generated SQL executes
-            gen_exec_success, _ = get_execution_result(generated_sql, str(db_path))
-        
-        time_taken = time.time() - start_time
-        
-        return {
-            "db_id": db_id,
-            "question": query,
-            "gold_sql": gold_sql if has_gold_sql else "N/A",
-            "generated_sql": generated_sql,
-            "exact_match": exact_match,
-            "exec_match": exec_match,
-            "execution_success": gen_exec_success,
-            "time_taken": time_taken,
-            "error": None,
-            "method": method
-        }
-        
     except Exception as e:
         import traceback
         traceback_str = traceback.format_exc()
+        if debug:
+            print(f"Error processing query '{query}': {str(e)}")
+            print(f"Traceback: {traceback_str}")
+        
         return {
             "db_id": db_id,
             "question": query,
@@ -228,11 +261,11 @@ def evaluate_dataset(dataset_file: str, model: str,
                     include_samples: bool = True,
                     seed: int = 42,
                     num_processes: int = 1,
-                    few_shot_examples: List[Dict[str, Any]] = None,
+                    num_few_shot: int = 0,
                     use_mcts: bool = True,
-                    mcts_iterations: int = 25,
+                    mcts_iterations: int = 20,
                     debug: bool = False) -> Dict[str, Any]:
-    """Evaluate RARP/MCTSRARP on a dataset"""
+    """Evaluate MCTS-RARP on a dataset"""
     # Load dataset
     try:
         with open(SPIDER_DIR / dataset_file, 'r') as f:
@@ -249,12 +282,18 @@ def evaluate_dataset(dataset_file: str, model: str,
             "error_rate": 0,
             "average_time_per_query": 0,
             "total_time": 0,
-            "mcts_used": use_mcts,
-            "mcts_iterations": mcts_iterations if use_mcts else 0,
-            "mcts_usage_rate": 0,
             "per_database_accuracy": {},
-            "results": []
+            "results": [],
+            "few_shot_examples": None,
+            "use_mcts": use_mcts,
+            "mcts_iterations": mcts_iterations
         }
+    
+    # Load few-shot examples if requested
+    few_shot_examples = None
+    if num_few_shot > 0:
+        few_shot_examples = load_few_shot_examples(num_examples=num_few_shot, seed=seed)
+        print(f"Using {len(few_shot_examples)} few-shot examples from training set")
     
     # Set random seed for reproducibility
     random.seed(seed)
@@ -265,26 +304,21 @@ def evaluate_dataset(dataset_file: str, model: str,
     else:
         examples = dataset
     
-    # Print information about the evaluation
     print(f"Evaluating {len(examples)} examples from {dataset_file} with model {model}")
-    if use_mcts:
-        print(f"MCTS: Enabled, Iterations: {mcts_iterations}")
-    else:
-        print("MCTS: Disabled (using standard RARP)")
+    print(f"MCTS: {'Enabled' if use_mcts else 'Disabled'}, Iterations: {mcts_iterations if use_mcts else 'N/A'}")
     
     # Special handling for test.json which might not have ground truth
     has_gold_sql = all("query" in example for example in examples[:5])
     
     # Evaluate in parallel if multiple processes are specified
-    if num_processes > 1 and not debug:  # Don't use multiprocessing in debug mode
+    if num_processes > 1:
         with multiprocessing.Pool(processes=num_processes) as pool:
             results = list(tqdm(
                 pool.starmap(
                     evaluate_query, 
-                    [(example, model, include_samples, few_shot_examples, use_mcts, mcts_iterations, False) for example in examples]
+                    [(example, model, include_samples, few_shot_examples, use_mcts, mcts_iterations, debug) for example in examples]
                 ),
-                total=len(examples),
-                desc="Evaluating"
+                total=len(examples)
             ))
     else:
         # Evaluate sequentially
@@ -301,34 +335,31 @@ def evaluate_dataset(dataset_file: str, model: str,
     errors = sum(1 for r in results if r["error"] is not None)
     
     # Calculate MCTS usage statistics
-    mcts_used = sum(1 for r in results if r.get("method") == "mcts")
+    mcts_used = sum(1 for r in results if r.get("mcts_used", False))
     mcts_usage_rate = mcts_used / total if total > 0 else 0
     
-    # Calculate method-specific performance
+    # Calculate metrics by method
     direct_results = [r for r in results if r.get("method") == "direct"]
     mcts_results = [r for r in results if r.get("method") == "mcts"]
     
-    direct_count = len(direct_results)
-    mcts_count = len(mcts_results)
-    
-    direct_exec_match = sum(1 for r in direct_results if r["exec_match"]) if has_gold_sql else 0
-    mcts_exec_match = sum(1 for r in mcts_results if r["exec_match"]) if has_gold_sql else 0
+    direct_exec_matches = sum(1 for r in direct_results if r["exec_match"]) if has_gold_sql else 0
+    mcts_exec_matches = sum(1 for r in mcts_results if r["exec_match"]) if has_gold_sql else 0
     
     direct_exec_success = sum(1 for r in direct_results if r["execution_success"])
     mcts_exec_success = sum(1 for r in mcts_results if r["execution_success"])
     
-    direct_accuracy = direct_exec_match / direct_count if direct_count > 0 and has_gold_sql else 0
-    mcts_accuracy = mcts_exec_match / mcts_count if mcts_count > 0 and has_gold_sql else 0
+    direct_accuracy = direct_exec_matches / len(direct_results) if direct_results and has_gold_sql else 0
+    mcts_accuracy = mcts_exec_matches / len(mcts_results) if mcts_results and has_gold_sql else 0
     
-    direct_success_rate = direct_exec_success / direct_count if direct_count > 0 else 0
-    mcts_success_rate = mcts_exec_success / mcts_count if mcts_count > 0 else 0
+    direct_success_rate = direct_exec_success / len(direct_results) if direct_results else 0
+    mcts_success_rate = mcts_exec_success / len(mcts_results) if mcts_results else 0
     
     # Calculate average time
     total_time = sum(r["time_taken"] for r in results)
     avg_time = total_time / total if total > 0 else 0
     
     # Group results by database
-    db_metrics = defaultdict(lambda: {"total": 0, "exact": 0, "exec": 0, "success": 0})
+    db_metrics = defaultdict(lambda: {"total": 0, "exact": 0, "exec": 0, "success": 0, "mcts_used": 0})
     for r in results:
         db_id = r["db_id"]
         db_metrics[db_id]["total"] += 1
@@ -336,6 +367,7 @@ def evaluate_dataset(dataset_file: str, model: str,
             db_metrics[db_id]["exact"] += 1 if r["exact_match"] else 0
             db_metrics[db_id]["exec"] += 1 if r["exec_match"] else 0
         db_metrics[db_id]["success"] += 1 if r["execution_success"] else 0
+        db_metrics[db_id]["mcts_used"] += 1 if r.get("mcts_used", False) else 0
     
     # Calculate per-database accuracy
     db_accuracy = {}
@@ -344,6 +376,7 @@ def evaluate_dataset(dataset_file: str, model: str,
             "exact_match_accuracy": metrics["exact"] / metrics["total"] if metrics["total"] > 0 and has_gold_sql else 0,
             "execution_match_accuracy": metrics["exec"] / metrics["total"] if metrics["total"] > 0 and has_gold_sql else 0,
             "execution_success_rate": metrics["success"] / metrics["total"] if metrics["total"] > 0 else 0,
+            "mcts_usage_rate": metrics["mcts_used"] / metrics["total"] if metrics["total"] > 0 else 0,
             "total_examples": metrics["total"]
         }
     
@@ -360,16 +393,18 @@ def evaluate_dataset(dataset_file: str, model: str,
         "per_database_accuracy": db_accuracy,
         "results": results,
         "has_gold_sql": has_gold_sql,
-        "mcts_used": use_mcts,
-        "mcts_iterations": mcts_iterations if use_mcts else 0,
+        "few_shot_examples": [{"question": ex["question"], "query": ex["query"]} 
+                             for ex in few_shot_examples] if few_shot_examples else None,
+        "use_mcts": use_mcts,
+        "mcts_iterations": mcts_iterations,
         "mcts_usage_rate": mcts_usage_rate,
-        "mcts_statistics": {
-            "direct_generation_count": direct_count,
-            "mcts_generation_count": mcts_count,
-            "direct_generation_accuracy": direct_accuracy,
-            "mcts_generation_accuracy": mcts_accuracy,
-            "direct_generation_success_rate": direct_success_rate,
-            "mcts_generation_success_rate": mcts_success_rate
+        "direct_vs_mcts": {
+            "direct_count": len(direct_results),
+            "mcts_count": len(mcts_results),
+            "direct_accuracy": direct_accuracy,
+            "mcts_accuracy": mcts_accuracy,
+            "direct_success_rate": direct_success_rate,
+            "mcts_success_rate": mcts_success_rate
         }
     }
 
@@ -379,8 +414,11 @@ def save_results(results: Dict[str, Any], output_file: str = None):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_name = results["model"].replace("/", "-")
         dataset_name = results["dataset"].replace(".json", "")
-        mcts_suffix = f"_mcts{results['mcts_iterations']}" if results.get("mcts_used", False) else ""
-        output_file = f"{RESULTS_DIR}/eval_{dataset_name}_{model_name}{mcts_suffix}_{timestamp}.json"
+        
+        mcts_suffix = f"_mcts{results['mcts_iterations']}" if results["use_mcts"] else ""
+        few_shot_suffix = f"_fewshot{len(results['few_shot_examples'])}" if results.get("few_shot_examples") else ""
+        
+        output_file = f"{RESULTS_DIR}/eval_{dataset_name}_{model_name}{mcts_suffix}{few_shot_suffix}_{timestamp}.json"
     
     with open(output_file, 'w') as f:
         # Save a summary without the full results to keep the file smaller
@@ -413,25 +451,28 @@ def print_results_summary(results: Dict[str, Any]):
     print(f"Average time per query: {results['average_time_per_query']:.2f} seconds")
     print(f"Total evaluation time: {results['total_time']:.2f} seconds")
     
-    # Print MCTS statistics if available
-    if "mcts_iterations" in results and results["mcts_iterations"] > 0:
+    # Print MCTS statistics if used
+    if results.get("use_mcts", False):
         print("\nMCTS Statistics:")
         print(f"MCTS Iterations: {results['mcts_iterations']}")
         print(f"MCTS Usage Rate: {results['mcts_usage_rate']:.2%}")
         
-        # Print method comparison if available
-        if "mcts_statistics" in results:
-            stats = results["mcts_statistics"]
+        direct_vs_mcts = results.get("direct_vs_mcts", {})
+        if direct_vs_mcts:
             print("\nDirect vs MCTS Comparison:")
-            print(f"Direct Generation Count: {stats['direct_generation_count']}")
-            print(f"MCTS Generation Count: {stats['mcts_generation_count']}")
+            print(f"Direct Generation Count: {direct_vs_mcts['direct_count']}")
+            print(f"MCTS Generation Count: {direct_vs_mcts['mcts_count']}")
             
             if results.get("has_gold_sql", True):
-                print(f"Direct Generation Accuracy: {stats['direct_generation_accuracy']:.2%}")
-                print(f"MCTS Generation Accuracy: {stats['mcts_generation_accuracy']:.2%}")
+                print(f"Direct Generation Accuracy: {direct_vs_mcts['direct_accuracy']:.2%}")
+                print(f"MCTS Generation Accuracy: {direct_vs_mcts['mcts_accuracy']:.2%}")
             
-            print(f"Direct Generation Success Rate: {stats['direct_generation_success_rate']:.2%}")
-            print(f"MCTS Generation Success Rate: {stats['mcts_generation_success_rate']:.2%}")
+            print(f"Direct Generation Success Rate: {direct_vs_mcts['direct_success_rate']:.2%}")
+            print(f"MCTS Generation Success Rate: {direct_vs_mcts['mcts_success_rate']:.2%}")
+    
+    # Print few-shot information if available
+    if results.get("few_shot_examples"):
+        print(f"\nUsed {len(results['few_shot_examples'])} few-shot examples")
     
     # Print top and bottom performing databases
     if results.get("has_gold_sql", True):
@@ -461,7 +502,7 @@ def print_results_summary(results: Dict[str, Any]):
                 print(f"Gold SQL: {failure['gold_sql']}")
                 print(f"Generated SQL: {failure['generated_sql']}")
                 print(f"Database: {failure['db_id']}")
-                print(f"Method: {failure.get('method', 'direct')}")
+                print(f"Method: {failure.get('method', 'N/A')}")
     elif "results" in results:
         # Just show some random examples for datasets without gold SQL
         sample_results = random.sample(results["results"], min(3, len(results["results"])))
@@ -472,167 +513,7 @@ def print_results_summary(results: Dict[str, Any]):
             print(f"Generated SQL: {result['generated_sql']}")
             print(f"Execution successful: {result['execution_success']}")
             print(f"Database: {result['db_id']}")
-            print(f"Method: {result.get('method', 'direct')}")
-
-def load_few_shot_examples(num_examples: int = 3, seed: int = 42) -> List[Dict[str, Any]]:
-    """Load few-shot examples from the training set"""
-    if num_examples <= 0:
-        return []
-        
-    try:
-        with open(SPIDER_DIR / "train_spider.json", 'r') as f:
-            train_data = json.load(f)
-        
-        # Set random seed for reproducibility
-        random.seed(seed)
-        
-        # Filter to examples with shorter queries and successful execution
-        valid_examples = []
-        for example in train_data:
-            if len(example["query"]) < 200 and "EXCEPT" not in example["query"] and "INTERSECT" not in example["query"]:
-                db_id = example["db_id"]
-                db_path = DATABASE_DIR / db_id / f"{db_id}.sqlite"
-                if db_path.exists():
-                    exec_success, _ = get_execution_result(example["query"], str(db_path))
-                    if exec_success:
-                        valid_examples.append(example)
-        
-        # Select random examples
-        selected_examples = random.sample(valid_examples, min(num_examples, len(valid_examples)))
-        
-        return selected_examples
-    except Exception as e:
-        print(f"Error loading few-shot examples: {e}")
-        return []
-
-def run_evaluation(args, use_mcts: bool, mcts_iterations: int, output_prefix: str = ""):
-    """Run evaluation with specified parameters"""
-    # Load few-shot examples if requested
-    few_shot_examples = None
-    if args.few_shot > 0:
-        few_shot_examples = load_few_shot_examples(args.few_shot, args.few_shot_seed)
-        print(f"Loaded {len(few_shot_examples)} few-shot examples from training set")
-    
-    combined_results = {
-        "model": args.model,
-        "datasets": args.datasets,
-        "mcts_used": use_mcts,
-        "mcts_iterations": mcts_iterations if use_mcts else 0,
-        "per_dataset_results": {},
-        "overall_metrics": {
-            "total_examples": 0,
-            "exact_match_count": 0,
-            "exec_match_count": 0,
-            "exec_success_count": 0,
-            "error_count": 0,
-            "total_time": 0,
-            "mcts_used_count": 0
-        }
-    }
-    
-    # Run evaluation for each dataset
-    for dataset in args.datasets:
-        print(f"\nEvaluating {'MCTS-' if use_mcts else ''}RARP with model {args.model} on {dataset}")
-        print(f"Using {args.processes} processes for evaluation")
-        
-        results = evaluate_dataset(
-            dataset_file=dataset,
-            model=args.model,
-            num_samples=args.samples,
-            include_samples=not args.no_sample_data,
-            seed=args.seed,
-            num_processes=args.processes,
-            few_shot_examples=few_shot_examples,
-            use_mcts=use_mcts,
-            mcts_iterations=mcts_iterations,
-            debug=args.debug
-        )
-        
-        # Save individual dataset results
-        if args.output:
-            output_file = f"{args.output}_{dataset.replace('.json', '')}{output_prefix}.json"
-        else:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            model_name = args.model.replace("/", "-")
-            dataset_name = dataset.replace(".json", "")
-            mcts_suffix = f"_mcts{mcts_iterations}" if use_mcts else ""
-            output_file = f"{RESULTS_DIR}/eval_{dataset_name}_{model_name}{mcts_suffix}_{timestamp}.json"
-        
-        save_results(results, output_file)
-        
-        # Print error information if requested
-        if args.verbose_errors and results["error_rate"] > 0:
-            print("\nError details:")
-            for i, result in enumerate([r for r in results["results"] if r["error"] is not None]):
-                if i < 5:  # Limit to first 5 errors
-                    print(f"\nError in query: {result['question']}")
-                    print(f"Database: {result['db_id']}")
-                    print(f"Error: {result['error']}")
-                else:
-                    break
-            print(f"\nTotal errors: {int(results['error_rate'] * results['total_examples'])}")
-        
-        # Print summary for this dataset
-        print_results_summary(results)
-        
-        # Add to combined results
-        if results["total_examples"] > 0:
-            combined_results["per_dataset_results"][dataset] = {
-                "exact_match_accuracy": results["exact_match_accuracy"],
-                "execution_match_accuracy": results["execution_match_accuracy"],
-                "execution_success_rate": results["execution_success_rate"],
-                "error_rate": results["error_rate"],
-                "average_time_per_query": results["average_time_per_query"],
-                "total_examples": results["total_examples"],
-                "mcts_usage_rate": results.get("mcts_usage_rate", 0)
-            }
-            
-            # Update overall metrics
-            combined_results["overall_metrics"]["total_examples"] += results["total_examples"]
-            combined_results["overall_metrics"]["exact_match_count"] += int(results["exact_match_accuracy"] * results["total_examples"])
-            combined_results["overall_metrics"]["exec_match_count"] += int(results["execution_match_accuracy"] * results["total_examples"])
-            combined_results["overall_metrics"]["exec_success_count"] += int(results["execution_success_rate"] * results["total_examples"])
-            combined_results["overall_metrics"]["error_count"] += int(results["error_rate"] * results["total_examples"])
-            combined_results["overall_metrics"]["total_time"] += results["total_time"]
-            combined_results["overall_metrics"]["mcts_used_count"] += int(results.get("mcts_usage_rate", 0) * results["total_examples"])
-    
-    # Calculate overall metrics
-    total = combined_results["overall_metrics"]["total_examples"]
-    if total > 0:
-        combined_results["overall_metrics"]["exact_match_accuracy"] = combined_results["overall_metrics"]["exact_match_count"] / total
-        combined_results["overall_metrics"]["execution_match_accuracy"] = combined_results["overall_metrics"]["exec_match_count"] / total
-        combined_results["overall_metrics"]["execution_success_rate"] = combined_results["overall_metrics"]["exec_success_count"] / total
-        combined_results["overall_metrics"]["error_rate"] = combined_results["overall_metrics"]["error_count"] / total
-        combined_results["overall_metrics"]["average_time_per_query"] = combined_results["overall_metrics"]["total_time"] / total
-        combined_results["overall_metrics"]["mcts_usage_rate"] = combined_results["overall_metrics"]["mcts_used_count"] / total
-    
-    # Save combined results
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_name = args.model.replace("/", "-")
-    mcts_suffix = f"_mcts{mcts_iterations}" if use_mcts else ""
-    combined_output = f"{RESULTS_DIR}/eval_combined_{model_name}{mcts_suffix}_{timestamp}.json"
-    with open(combined_output, 'w') as f:
-        json.dump(combined_results, f, indent=2)
-    
-    # Print combined results
-    print("\n" + "="*50)
-    print(f"Combined Evaluation Summary for {args.model} on {', '.join(args.datasets)}")
-    print("="*50)
-    print(f"Total examples evaluated: {combined_results['overall_metrics']['total_examples']}")
-    print(f"Exact match accuracy: {combined_results['overall_metrics']['exact_match_accuracy']:.2%}")
-    print(f"Execution match accuracy: {combined_results['overall_metrics']['execution_match_accuracy']:.2%}")
-    print(f"Execution success rate: {combined_results['overall_metrics']['execution_success_rate']:.2%}")
-    print(f"Error rate: {combined_results['overall_metrics']['error_rate']:.2%}")
-    print(f"Average time per query: {combined_results['overall_metrics']['average_time_per_query']:.2f} seconds")
-    print(f"Total evaluation time: {combined_results['overall_metrics']['total_time']:.2f} seconds")
-    
-    if use_mcts:
-        print(f"MCTS enabled with {mcts_iterations} iterations")
-        print(f"MCTS usage rate: {combined_results['overall_metrics']['mcts_usage_rate']:.2%}")
-        
-    print(f"Combined results saved to {combined_output}")
-    
-    return combined_results
+            print(f"Method: {result.get('method', 'N/A')}")
 
 def main():
     """Main function to run evaluation"""
@@ -652,35 +533,242 @@ def main():
     parser.add_argument("--few-shot-seed", type=int, default=42, 
                        help="Random seed for few-shot example selection")
     parser.add_argument("--no-mcts", action="store_true", help="Disable MCTS (use regular RARP)")
-    parser.add_argument("--mcts-iterations", type=int, default=25, help="Number of MCTS iterations")
+    parser.add_argument("--mcts-iterations", type=int, default=20, help="Number of MCTS iterations")
     parser.add_argument("--compare", action="store_true", 
                       help="Run both MCTS and non-MCTS versions for comparison")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
     args = parser.parse_args()
     
-    # Run evaluation
+    combined_results = {
+        "model": args.model,
+        "datasets": args.datasets,
+        "few_shot_count": args.few_shot,
+        "use_mcts": not args.no_mcts,
+        "mcts_iterations": args.mcts_iterations,
+        "per_dataset_results": {},
+        "overall_metrics": {
+            "total_examples": 0,
+            "exact_match_count": 0,
+            "exec_match_count": 0,
+            "exec_success_count": 0,
+            "error_count": 0,
+            "total_time": 0
+        }
+    }
+    
+    # Collect dataset results
+    dataset_results = {}
+    
+    # If comparison mode, evaluate both with and without MCTS
     if args.compare:
-        # Run both MCTS and non-MCTS versions
-        print("=== Running standard RARP evaluation ===")
-        standard_results = run_evaluation(args, False, 0, "_standard")
+        # First run with MCTS
+        combined_results_mcts = run_evaluation(
+            args, use_mcts=True, mcts_iterations=args.mcts_iterations,
+            output_prefix="mcts_"
+        )
         
-        print("\n=== Running MCTS-RARP evaluation ===")
-        mcts_results = run_evaluation(args, True, args.mcts_iterations, "_mcts")
+        # Then run without MCTS
+        combined_results_no_mcts = run_evaluation(
+            args, use_mcts=False, mcts_iterations=0,
+            output_prefix="no_mcts_"
+        )
         
-        # Compare results
+        # Save comparison results
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        model_name = args.model.replace("/", "-")
+        few_shot_suffix = f"_fewshot{args.few_shot}" if args.few_shot > 0 else ""
+        
+        comparison_output = f"{RESULTS_DIR}/comparison_{model_name}{few_shot_suffix}_{timestamp}.json"
+        
+        comparison_results = {
+            "model": args.model,
+            "datasets": args.datasets,
+            "few_shot_count": args.few_shot,
+            "mcts_iterations": args.mcts_iterations,
+            "mcts_results": combined_results_mcts,
+            "no_mcts_results": combined_results_no_mcts
+        }
+        
+        with open(comparison_output, 'w') as f:
+            json.dump(comparison_results, f, indent=2)
+        
+        print(f"\nComparison results saved to {comparison_output}")
+        
+        # Print comparison
         print("\n" + "="*50)
-        print("Comparison: Standard RARP vs MCTS-RARP")
+        print(f"Comparison Summary for {args.model}")
         print("="*50)
         
-        if standard_results["overall_metrics"]["total_examples"] > 0 and mcts_results["overall_metrics"]["total_examples"] > 0:
-            print(f"Execution match accuracy - Standard: {standard_results['overall_metrics']['execution_match_accuracy']:.2%}, MCTS: {mcts_results['overall_metrics']['execution_match_accuracy']:.2%}")
-            print(f"Execution success rate - Standard: {standard_results['overall_metrics']['execution_success_rate']:.2%}, MCTS: {mcts_results['overall_metrics']['execution_success_rate']:.2%}")
-            print(f"Average time per query - Standard: {standard_results['overall_metrics']['average_time_per_query']:.2f}s, MCTS: {mcts_results['overall_metrics']['average_time_per_query']:.2f}s")
+        for dataset in args.datasets:
+            dataset_key = dataset.replace(".json", "")
+            
+            mcts_metrics = combined_results_mcts.get("per_dataset_results", {}).get(dataset, {})
+            no_mcts_metrics = combined_results_no_mcts.get("per_dataset_results", {}).get(dataset, {})
+            
+            print(f"\nDataset: {dataset}")
+            print(f"  MCTS Execution Match Accuracy: {mcts_metrics.get('execution_match_accuracy', 0):.2%}")
+            print(f"  Non-MCTS Execution Match Accuracy: {no_mcts_metrics.get('execution_match_accuracy', 0):.2%}")
+            print(f"  Improvement: {(mcts_metrics.get('execution_match_accuracy', 0) - no_mcts_metrics.get('execution_match_accuracy', 0)):.2%}")
+            
+            print(f"  MCTS Execution Success Rate: {mcts_metrics.get('execution_success_rate', 0):.2%}")
+            print(f"  Non-MCTS Execution Success Rate: {no_mcts_metrics.get('execution_success_rate', 0):.2%}")
+            print(f"  Improvement: {(mcts_metrics.get('execution_success_rate', 0) - no_mcts_metrics.get('execution_success_rate', 0)):.2%}")
+            
+            print(f"  MCTS Average Time: {mcts_metrics.get('average_time_per_query', 0):.2f} seconds")
+            print(f"  Non-MCTS Average Time: {no_mcts_metrics.get('average_time_per_query', 0):.2f} seconds")
     else:
-        # Run single evaluation
-        use_mcts = not args.no_mcts
-        mcts_iterations = args.mcts_iterations if use_mcts else 0
-        run_evaluation(args, use_mcts, mcts_iterations)
+        # Normal evaluation mode
+        combined_results = run_evaluation(
+            args, use_mcts=not args.no_mcts, mcts_iterations=args.mcts_iterations
+        )
+
+def run_evaluation(args, use_mcts, mcts_iterations, output_prefix=""):
+    """Run evaluation with specified parameters"""
+    combined_results = {
+        "model": args.model,
+        "datasets": args.datasets,
+        "few_shot_count": args.few_shot,
+        "use_mcts": use_mcts,
+        "mcts_iterations": mcts_iterations,
+        "per_dataset_results": {},
+        "overall_metrics": {
+            "total_examples": 0,
+            "exact_match_count": 0,
+            "exec_match_count": 0,
+            "exec_success_count": 0,
+            "error_count": 0,
+            "total_time": 0
+        }
+    }
+    
+    # Collect dataset results
+    dataset_results = {}
+    
+    # Run evaluation for each dataset
+    for dataset in args.datasets:
+        print(f"\nEvaluating {'MCTS-' if use_mcts else ''}RARP with model {args.model} on {dataset}")
+        print(f"Using {args.processes} processes for evaluation")
+        
+        if args.few_shot > 0:
+            print(f"Including {args.few_shot} few-shot examples from training set")
+        
+        if use_mcts:
+            print(f"Using MCTS with {mcts_iterations} iterations")
+        
+        results = evaluate_dataset(
+            dataset_file=dataset,
+            model=args.model,
+            num_samples=args.samples,
+            include_samples=not args.no_sample_data,
+            seed=args.seed,
+            num_processes=args.processes,
+            num_few_shot=args.few_shot,
+            use_mcts=use_mcts,
+            mcts_iterations=mcts_iterations,
+            debug=args.debug
+        )
+        
+        # Save individual dataset results
+        if args.output:
+            output_file = f"{args.output}_{output_prefix}{dataset.replace('.json', '')}.json"
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            model_name = args.model.replace("/", "-")
+            dataset_name = dataset.replace(".json", "")
+            
+            mcts_suffix = f"_mcts{mcts_iterations}" if use_mcts else ""
+            few_shot_suffix = f"_fewshot{args.few_shot}" if args.few_shot > 0 else ""
+            
+            output_file = f"{RESULTS_DIR}/{output_prefix}eval_{dataset_name}_{model_name}{mcts_suffix}{few_shot_suffix}_{timestamp}.json"
+        
+        save_results(results, output_file)
+        
+        # Print error information if requested
+        if args.verbose_errors and results["error_rate"] > 0:
+            print("\nError details:")
+            for i, result in enumerate([r for r in results["results"] if r["error"] is not None]):
+                if i < 5:  # Limit to first 5 errors
+                    print(f"\nError in query: {result['question']}")
+                    print(f"Database: {result['db_id']}")
+                    print(f"Error: {result['error']}")
+                else:
+                    break
+            print(f"\nTotal errors: {int(results['error_rate'] * results['total_examples'])}")
+        
+        # Store results for later
+        dataset_results[dataset] = results
+        
+        # Print summary for this dataset
+        print_results_summary(results)
+        
+        # Add to combined results
+        if results["total_examples"] > 0:
+            combined_results["per_dataset_results"][dataset] = {
+                "exact_match_accuracy": results["exact_match_accuracy"],
+                "execution_match_accuracy": results["execution_match_accuracy"],
+                "execution_success_rate": results["execution_success_rate"],
+                "error_rate": results["error_rate"],
+                "average_time_per_query": results["average_time_per_query"],
+                "total_examples": results["total_examples"],
+                "mcts_usage_rate": results.get("mcts_usage_rate", 0) if use_mcts else 0
+            }
+            
+            # Update overall metrics
+            combined_results["overall_metrics"]["total_examples"] += results["total_examples"]
+            combined_results["overall_metrics"]["exact_match_count"] += int(results["exact_match_accuracy"] * results["total_examples"])
+            combined_results["overall_metrics"]["exec_match_count"] += int(results["execution_match_accuracy"] * results["total_examples"])
+            combined_results["overall_metrics"]["exec_success_count"] += int(results["execution_success_rate"] * results["total_examples"])
+            combined_results["overall_metrics"]["error_count"] += int(results["error_rate"] * results["total_examples"])
+            combined_results["overall_metrics"]["total_time"] += results["total_time"]
+    
+    # Calculate overall metrics
+    total = combined_results["overall_metrics"]["total_examples"]
+    if total > 0:
+        combined_results["overall_metrics"]["exact_match_accuracy"] = combined_results["overall_metrics"]["exact_match_count"] / total
+        combined_results["overall_metrics"]["execution_match_accuracy"] = combined_results["overall_metrics"]["exec_match_count"] / total
+        combined_results["overall_metrics"]["execution_success_rate"] = combined_results["overall_metrics"]["exec_success_count"] / total
+        combined_results["overall_metrics"]["error_rate"] = combined_results["overall_metrics"]["error_count"] / total
+        combined_results["overall_metrics"]["average_time_per_query"] = combined_results["overall_metrics"]["total_time"] / total
+    
+    # Add few-shot examples to combined results if used
+    if args.few_shot > 0 and "few_shot_examples" in dataset_results.get(args.datasets[0], {}):
+        combined_results["few_shot_examples"] = dataset_results[args.datasets[0]]["few_shot_examples"]
+    
+    # Save combined results
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_name = args.model.replace("/", "-")
+    
+    mcts_suffix = f"_mcts{mcts_iterations}" if use_mcts else ""
+    few_shot_suffix = f"_fewshot{args.few_shot}" if args.few_shot > 0 else ""
+    
+    combined_output = f"{RESULTS_DIR}/{output_prefix}eval_combined_{model_name}{mcts_suffix}{few_shot_suffix}_{timestamp}.json"
+    
+    with open(combined_output, 'w') as f:
+        json.dump(combined_results, f, indent=2)
+    
+    # Print combined results
+    print("\n" + "="*50)
+    print(f"Combined Evaluation Summary for {args.model} on {', '.join(args.datasets)}")
+    print("="*50)
+    print(f"Total examples evaluated: {combined_results['overall_metrics']['total_examples']}")
+    print(f"Exact match accuracy: {combined_results['overall_metrics']['exact_match_accuracy']:.2%}")
+    print(f"Execution match accuracy: {combined_results['overall_metrics']['execution_match_accuracy']:.2%}")
+    print(f"Execution success rate: {combined_results['overall_metrics']['execution_success_rate']:.2%}")
+    print(f"Error rate: {combined_results['overall_metrics']['error_rate']:.2%}")
+    print(f"Average time per query: {combined_results['overall_metrics']['average_time_per_query']:.2f} seconds")
+    print(f"Total evaluation time: {combined_results['overall_metrics']['total_time']:.2f} seconds")
+    
+    if use_mcts:
+        print(f"MCTS enabled with {mcts_iterations} iterations")
+    else:
+        print("MCTS disabled")
+    
+    if args.few_shot > 0:
+        print(f"Used {args.few_shot} few-shot examples from training set")
+    
+    print(f"Combined results saved to {combined_output}")
+    
+    return combined_results
 
 if __name__ == "__main__":
     main()
