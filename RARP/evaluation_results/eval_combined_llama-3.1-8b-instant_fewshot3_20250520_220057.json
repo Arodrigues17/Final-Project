@@ -1,0 +1,44 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "datasets": [
+    "dev.json"
+  ],
+  "few_shot_count": 3,
+  "per_dataset_results": {
+    "dev.json": {
+      "exact_match_accuracy": 0.07833655705996131,
+      "execution_match_accuracy": 0.4932301740812379,
+      "execution_success_rate": 0.776595744680851,
+      "error_rate": 0.06866537717601548,
+      "average_time_per_query": 0.585515680350003,
+      "total_examples": 1034
+    }
+  },
+  "overall_metrics": {
+    "total_examples": 1034,
+    "exact_match_count": 81,
+    "exec_match_count": 510,
+    "exec_success_count": 803,
+    "error_count": 71,
+    "total_time": 605.4232134819031,
+    "exact_match_accuracy": 0.07833655705996131,
+    "execution_match_accuracy": 0.4932301740812379,
+    "execution_success_rate": 0.776595744680851,
+    "error_rate": 0.06866537717601548,
+    "average_time_per_query": 0.585515680350003
+  },
+  "few_shot_examples": [
+    {
+      "question": "Who performed the song named \"Le Pop\"?",
+      "query": "SELECT T2.firstname ,  T2.lastname FROM Performance AS T1 JOIN Band AS T2 ON T1.bandmate  =  T2.id JOIN Songs AS T3 ON T3.SongId  =  T1.SongId WHERE T3.Title  =  \"Le Pop\""
+    },
+    {
+      "question": "Tell me the types of the policy used by the customer named \"Dayana Robel\".",
+      "query": "SELECT DISTINCT t3.policy_type_code FROM customers AS t1 JOIN customers_policies AS t2 ON t1.customer_id  =  t2.customer_id JOIN available_policies AS t3 ON t2.policy_id  =  t3.policy_id WHERE t1.customer_name  =  \"Dayana Robel\""
+    },
+    {
+      "question": "What are the different ids and names of the stations that have had more than 12 bikes available?",
+      "query": "SELECT DISTINCT T1.id ,  T1.name FROM station AS T1 JOIN status AS T2 ON T1.id  =  T2.station_id WHERE T2.bikes_available  >  12"
+    }
+  ]
+}
