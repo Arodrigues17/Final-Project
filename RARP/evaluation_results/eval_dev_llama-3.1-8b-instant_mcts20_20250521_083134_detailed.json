@@ -1,0 +1,345 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 20,
+  "exact_match_accuracy": 0.0,
+  "execution_match_accuracy": 0.0,
+  "execution_success_rate": 0.0,
+  "error_rate": 1.0,
+  "average_time_per_query": 0.04536226987838745,
+  "total_time": 0.907245397567749,
+  "per_database_accuracy": {
+    "flight_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 3
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 2
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    }
+  },
+  "results": [
+    {
+      "db_id": "flight_2",
+      "question": "Give the code of the airport with the least flights.",
+      "gold_sql": "SELECT T1.AirportCode FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport OR T1.AirportCode  =  T2.SourceAirport GROUP BY T1.AirportCode ORDER BY count(*) LIMIT 1",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0063822269439697266,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 171, in evaluate_query\n    is_complex = rarp._is_complex_query(query)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 224, in _is_complex_query\n    schema_entities = set(table.lower() for table in self.schema.tables)\n                                                     ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold_sql": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.15207886695861816,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "student_transcripts_tracking",
+      "question": "On average, when were the transcripts printed?",
+      "gold_sql": "SELECT avg(transcript_date) FROM Transcripts",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.005286693572998047,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 171, in evaluate_query\n    is_complex = rarp._is_complex_query(query)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 224, in _is_complex_query\n    schema_entities = set(table.lower() for table in self.schema.tables)\n                                                     ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "battle_death",
+      "question": "What are the distinct battle names which are between bulgarian commander 'Kaloyan' and latin commander 'Baldwin I'?",
+      "gold_sql": "SELECT name FROM battle WHERE bulgarian_commander  =  'Kaloyan' AND latin_commander  =  'Baldwin I'",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.06839156150817871,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "wta_1",
+      "question": "List the first and last name of all players who are left / L hand in the order of birth date.",
+      "gold_sql": "SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.06257128715515137,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "employee_hire_evaluation",
+      "question": "Find the name of the shops that do not hire any employee.",
+      "gold_sql": "SELECT name FROM shop WHERE shop_id NOT IN (SELECT shop_id FROM hiring)",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.07588410377502441,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights arriving in Aberdeen city?",
+      "gold_sql": "SELECT count(*) FROM FLIGHTS AS T1 JOIN AIRPORTS AS T2 ON T1.DestAirport  =  T2.AirportCode WHERE T2.City  =  \"Aberdeen\"",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.04713845252990723,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold_sql": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.061354637145996094,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "network_1",
+      "question": "Show the names and grades of each high schooler.",
+      "gold_sql": "SELECT name ,  grade FROM Highschooler",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.005178928375244141,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 171, in evaluate_query\n    is_complex = rarp._is_complex_query(query)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 224, in _is_complex_query\n    schema_entities = set(table.lower() for table in self.schema.tables)\n                                                     ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold_sql": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.062463998794555664,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold_sql": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.05451679229736328,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold_sql": "SELECT count(*) FROM FLIGHTS",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.054795026779174805,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "wta_1",
+      "question": "List the names of all winners who played in both 2013 and 2016.",
+      "gold_sql": "SELECT winner_name FROM matches WHERE YEAR  =  2013 INTERSECT SELECT winner_name FROM matches WHERE YEAR  =  2016",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity",
+      "method": "skipped"
+    },
+    {
+      "db_id": "wta_1",
+      "question": "What is the code of the country with the most players?",
+      "gold_sql": "SELECT country_code FROM players GROUP BY country_code ORDER BY count(*) DESC LIMIT 1",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.06757164001464844,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold_sql": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.05017375946044922,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "course_teach",
+      "question": "Show names of teachers that teach at least two courses.",
+      "gold_sql": "SELECT T2.Name FROM course_arrange AS T1 JOIN teacher AS T2 ON T1.Teacher_ID  =  T2.Teacher_ID GROUP BY T2.Name HAVING COUNT(*)  >=  2",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.005119800567626953,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 171, in evaluate_query\n    is_complex = rarp._is_complex_query(query)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 224, in _is_complex_query\n    schema_entities = set(table.lower() for table in self.schema.tables)\n                                                     ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "orchestra",
+      "question": "Count the number of orchestras that have CD or DVD as their record format.",
+      "gold_sql": "SELECT COUNT(*) FROM orchestra WHERE Major_Record_Format  =  \"CD\" OR Major_Record_Format  =  \"DVD\"",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.0625753402709961,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    },
+    {
+      "db_id": "wta_1",
+      "question": "What are the country code and first name of the players who won in both tourney WTA Championships and Australian Open?",
+      "gold_sql": "SELECT T1.country_code ,  T1.first_name FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id WHERE T2.tourney_name  =  'WTA Championships' INTERSECT SELECT T1.country_code ,  T1.first_name FROM players AS T1 JOIN matches AS T2 ON T1.player_id  =  T2.winner_id WHERE T2.tourney_name  =  'Australian Open'",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity",
+      "method": "skipped"
+    },
+    {
+      "db_id": "dog_kennels",
+      "question": "Find the states where both owners and professionals live.",
+      "gold_sql": "SELECT state FROM Owners INTERSECT SELECT state FROM Professionals",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity",
+      "method": "skipped"
+    },
+    {
+      "db_id": "student_transcripts_tracking",
+      "question": "What is the last transcript release date?",
+      "gold_sql": "SELECT transcript_date FROM Transcripts ORDER BY transcript_date DESC LIMIT 1",
+      "generated_sql": "ERROR: 'MCTSRARP' object has no attribute 'schema'",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0.06576228141784668,
+      "error": "'MCTSRARP' object has no attribute 'schema'\nTraceback (most recent call last):\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 237, in evaluate_query\n    raise e\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/evaluate_mcts_rarp.py\", line 176, in evaluate_query\n    result = rarp.generate_sql(query, include_samples)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 133, in generate_sql\n    mcts_sql = self._mcts_search(query, direct_sql)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 248, in _mcts_search\n    self._populate_possible_actions(root, nl_query)\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 280, in _populate_possible_actions\n    actions = self._generate_refinement_actions(node.state, nl_query)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 321, in _generate_refinement_actions\n    response = self._call_llm(prompt)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/anthony/dev/Big-Data/Final_Project/RARP/mcts_rarp.py\", line 635, in _call_llm\n    schema_info = self.schema.get_schema_str()\n                  ^^^^^^^^^^^\nAttributeError: 'MCTSRARP' object has no attribute 'schema'\n",
+      "method": "error"
+    }
+  ],
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 20,
+  "mcts_usage_rate": 0.0,
+  "direct_vs_mcts": {
+    "direct_count": 0,
+    "mcts_count": 0,
+    "direct_accuracy": 0,
+    "mcts_accuracy": 0,
+    "direct_success_rate": 0,
+    "mcts_success_rate": 0
+  }
+}

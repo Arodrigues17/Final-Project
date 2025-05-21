@@ -10,11 +10,34 @@ import argparse
 import sqlite3
 from typing import Dict, List, Tuple, Optional, Any
 import re
-from groq import Groq
+from groq import Groq, APIError, RateLimitError
 from pathlib import Path
 
-# Initialize Groq client
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+def get_groq_api_key():
+    """Try to get a Groq API key from multiple environment variables"""
+    # Try primary API key
+    api_key = os.environ.get("GROQ_API_KEY")
+    if api_key:
+        print("Using primary GROQ_API_KEY")
+        return api_key
+    
+    # Try backup API key
+    api_key = os.environ.get("GROQ_API_KEY_backup")
+    if api_key:
+        print("Using backup GROQ_API_KEY_backup")
+        return api_key
+    
+    # Try paid API key
+    api_key = os.environ.get("GROQ_API_KEY_paid")
+    if api_key:
+        print("Using paid GROQ_API_KEY_paid")
+        return api_key
+    
+    # If no keys are available, raise an error
+    raise ValueError("No Groq API key found in environment variables. Please set GROQ_API_KEY, GROQ_API_KEY_backup, or GROQ_API_KEY_paid.")
+
+# Initialize Groq client with the first available API key
+client = Groq(api_key=get_groq_api_key())
 
 # Set paths
 SPIDER_DIR = Path("../datasets/spider")
@@ -176,24 +199,46 @@ class SQLCoder:
         """Generate SQL using SQLCoder prompting pattern with Groq API"""
         prompt = self._create_prompt(query, context)
         
-        try:
-            # Call Groq API
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are an expert SQL engineer. Your task is to convert natural language queries to SQL based on the provided database schema."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.1,  # Lower temperature for more deterministic results
-                max_tokens=1024
-            )
-            
-            # Extract SQL from response
-            sql = self._extract_sql(response.choices[0].message.content)
-            return sql
+        # Try with each API key in case of rate limiting
+        for key_type in ["primary", "backup", "paid"]:
+            try:
+                # Update API key if we're retrying
+                if key_type == "backup":
+                    client.api_key = os.environ.get("GROQ_API_KEY_backup", client.api_key)
+                    print("Switching to backup API key due to rate limiting")
+                elif key_type == "paid":
+                    client.api_key = os.environ.get("GROQ_API_KEY_paid", client.api_key)
+                    print("Switching to paid API key due to rate limiting")
+                
+                # Call Groq API
+                response = client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "You are an expert SQL engineer. Your task is to convert natural language queries to SQL based on the provided database schema."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.1,  # Lower temperature for more deterministic results
+                    max_tokens=1024
+                )
+                
+                # Extract SQL from response
+                sql = self._extract_sql(response.choices[0].message.content)
+                return sql
+                
+            except (RateLimitError, APIError) as e:
+                if "rate limit" in str(e).lower() or "quota exceeded" in str(e).lower():
+                    if key_type == "paid":
+                        # We've tried all keys, give up
+                        return f"Error: All API keys are rate limited: {str(e)}"
+                    # Otherwise continue to try the next key
+                    continue
+                else:
+                    # For other API errors, just return the error
+                    return f"Error generating SQL: {str(e)}"
+            except Exception as e:
+                return f"Error generating SQL: {str(e)}"
         
-        except Exception as e:
-            return f"Error generating SQL: {str(e)}"
+        return "Error: Unable to generate SQL with any available API keys"
     
     def _create_prompt(self, query: str, context: str) -> str:
         """Create a prompt following SQLCoder patterns"""

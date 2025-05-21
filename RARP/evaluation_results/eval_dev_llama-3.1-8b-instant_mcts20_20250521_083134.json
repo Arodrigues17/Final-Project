@@ -1,0 +1,103 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 20,
+  "exact_match_accuracy": 0.0,
+  "execution_match_accuracy": 0.0,
+  "execution_success_rate": 0.0,
+  "error_rate": 1.0,
+  "average_time_per_query": 0.04536226987838745,
+  "total_time": 0.907245397567749,
+  "per_database_accuracy": {
+    "flight_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 3
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 2
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    }
+  },
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 20,
+  "mcts_usage_rate": 0.0,
+  "direct_vs_mcts": {
+    "direct_count": 0,
+    "mcts_count": 0,
+    "direct_accuracy": 0,
+    "mcts_accuracy": 0,
+    "direct_success_rate": 0,
+    "mcts_success_rate": 0
+  }
+}

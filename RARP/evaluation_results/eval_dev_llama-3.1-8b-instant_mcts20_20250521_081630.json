@@ -1,0 +1,166 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 1034,
+  "exact_match_accuracy": 0.0,
+  "execution_match_accuracy": 0.0,
+  "execution_success_rate": 0.0,
+  "error_rate": 1.0,
+  "average_time_per_query": 0.05151557484263378,
+  "total_time": 53.267104387283325,
+  "per_database_accuracy": {
+    "concert_singer": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 45
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 42
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 92
+    },
+    "flight_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 80
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 38
+    },
+    "cre_Doc_Template_Mgt": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 84
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 30
+    },
+    "museum_visit": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 18
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 62
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 16
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 78
+    },
+    "tvshow": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 62
+    },
+    "poker_player": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 40
+    },
+    "voter_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 15
+    },
+    "world_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 120
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 40
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 56
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 82
+    },
+    "singer": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 30
+    },
+    "real_estate_properties": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    }
+  },
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 20,
+  "mcts_usage_rate": 0.0,
+  "direct_vs_mcts": {
+    "direct_count": 0,
+    "mcts_count": 0,
+    "direct_accuracy": 0,
+    "mcts_accuracy": 0,
+    "direct_success_rate": 0,
+    "mcts_success_rate": 0
+  }
+}
