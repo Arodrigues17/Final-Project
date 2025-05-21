@@ -1,0 +1,278 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 15,
+  "exact_match_accuracy": 0.06666666666666667,
+  "execution_match_accuracy": 0.5333333333333333,
+  "execution_success_rate": 0.9333333333333333,
+  "error_rate": 0.06666666666666667,
+  "average_time_per_query": 5.037146886189778,
+  "total_time": 75.55720329284668,
+  "per_database_accuracy": {
+    "flight_2": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.6666666666666666,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.3333333333333333,
+      "total_examples": 3
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.5,
+      "total_examples": 4
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.3333333333333333,
+      "execution_success_rate": 0.6666666666666666,
+      "mcts_usage_rate": 0.3333333333333333,
+      "total_examples": 3
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    }
+  },
+  "results": [
+    {
+      "db_id": "flight_2",
+      "question": "Give the code of the airport with the least flights.",
+      "gold_sql": "SELECT T1.AirportCode FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport OR T1.AirportCode  =  T2.SourceAirport GROUP BY T1.AirportCode ORDER BY count(*) LIMIT 1",
+      "generated_sql": "SELECT T1.AirportCode \nFROM airports AS T1 \nLEFT JOIN flights AS T2 ON T1.AirportCode = T2.SourceAirport \nGROUP BY T1.AirportCode \nORDER BY COUNT(T2.FlightNo) ASC \nLIMIT 1;  -- Change the JOIN type to LEFT JOIN",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 6.992347478866577,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold_sql": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "generated_sql": "SELECT COUNT(DISTINCT T1.StuID) \nFROM Student AS T1 \nJOIN Has_Pet AS T2 ON T1.StuID = T2.StuID \nJOIN Pets AS T3 ON T2.PetID = T3.PetID \nWHERE T1.Age > 20;",
+      "method": "direct",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 4.866029977798462,
+      "error": null,
+      "mcts_used": false
+    },
+    {
+      "db_id": "student_transcripts_tracking",
+      "question": "On average, when were the transcripts printed?",
+      "gold_sql": "SELECT avg(transcript_date) FROM Transcripts",
+      "generated_sql": "SELECT AVG(T1.transcript_date) \nFROM Transcripts T1 LIMIT 10",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 1.9573092460632324,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "battle_death",
+      "question": "What are the distinct battle names which are between bulgarian commander 'Kaloyan' and latin commander 'Baldwin I'?",
+      "gold_sql": "SELECT name FROM battle WHERE bulgarian_commander  =  'Kaloyan' AND latin_commander  =  'Baldwin I'",
+      "generated_sql": "SELECT DISTINCT b.name\nFROM battle b\nWHERE b.bulgarian_commander = 'Kaloyan'\nAND b.latin_commander = 'Baldwin I';",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 4.504820346832275,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "wta_1",
+      "question": "List the first and last name of all players who are left / L hand in the order of birth date.",
+      "gold_sql": "SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date",
+      "generated_sql": "SELECT first_name, last_name, birth_date\nFROM players\nWHERE hand = 'L' AND country_code IS NOT NULL\nORDER BY birth_date ASC LIMIT 10",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 8.715095043182373,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "employee_hire_evaluation",
+      "question": "Find the name of the shops that do not hire any employee.",
+      "gold_sql": "SELECT name FROM shop WHERE shop_id NOT IN (SELECT shop_id FROM hiring)",
+      "generated_sql": "SELECT DISTINCT T1.Name \nFROM shop AS T1 \nLEFT JOIN hiring AS T2 ON T1.Shop_ID = T2.Shop_ID \nWHERE T2.Shop_ID IS NULL ORDER BY 1",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 3.367964029312134,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights arriving in Aberdeen city?",
+      "gold_sql": "SELECT count(*) FROM FLIGHTS AS T1 JOIN AIRPORTS AS T2 ON T1.DestAirport  =  T2.AirportCode WHERE T2.City  =  \"Aberdeen\"",
+      "generated_sql": "SELECT COUNT(*) \nFROM flights \nWHERE DestAirport = (SELECT AirportCode \n                     FROM airports \n                     WHERE City = 'Aberdeen');",
+      "method": "direct",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 1.5358333587646484,
+      "error": null,
+      "mcts_used": false
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold_sql": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "generated_sql": "SELECT c.CountryId, c.CountryName\nFROM countries c\nWHERE c.CountryId IN (\n  SELECT cm.Country\n  FROM car_makers cm\n  JOIN model_list ml ON cm.Id = ml.Maker\n  JOIN car_names cn ON ml.ModelId = cn.MakeId\n  JOIN cars_data cd ON cn.MakeId = cd.Id\n  WHERE cn.Make = 'fiat'\n  GROUP BY cm.Country\n  HAVING COUNT(DISTINCT cm.Id) > 3\n)\nOR c.CountryId IN (\n  SELECT cm.Country\n  FROM car_makers cm\n  GROUP BY cm.Country\n  HAVING COUNT(cm.Id) > 3\n)\nORDER BY c.CountryId",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 9.741687297821045,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "network_1",
+      "question": "Show the names and grades of each high schooler.",
+      "gold_sql": "SELECT name ,  grade FROM Highschooler",
+      "generated_sql": "SELECT name, grade \nFROM Highschooler LIMIT 10",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 4.081597328186035,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold_sql": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "generated_sql": "SELECT T1.Fname, T1.Age\nFROM Student AS T1\nJOIN Has_Pet AS T2 ON T1.StuID = T2.StuID\nJOIN Pets AS T3 ON T2.PetID = T3.PetID\nWHERE T3.PetType = 'dog'\nAND T3.PetType != 'cat';",
+      "method": "direct",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 7.370572090148926,
+      "error": null,
+      "mcts_used": false
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold_sql": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "generated_sql": "SELECT T1.Fname, T1.LName, T1.Age, T1.Major\nFROM Student AS T1\nWHERE T1.StuID NOT IN (\n  SELECT T2.StuID\n  FROM Has_Pet AS T2\n  JOIN Pets AS T3 ON T2.PetID = T3.PetID\n  WHERE T3.PetType = 'cat'\n)\nGROUP BY T1.Major\nORDER BY COUNT(T1.StuID) DESC\nLIMIT 10",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 4.911886930465698,
+      "error": null,
+      "mcts_used": true
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold_sql": "SELECT count(*) FROM FLIGHTS",
+      "generated_sql": "SELECT COUNT(*) \nFROM flights;",
+      "method": "direct",
+      "exact_match": true,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 1.5363776683807373,
+      "error": null,
+      "mcts_used": false
+    },
+    {
+      "db_id": "wta_1",
+      "question": "List the names of all winners who played in both 2013 and 2016.",
+      "gold_sql": "SELECT winner_name FROM matches WHERE YEAR  =  2013 INTERSECT SELECT winner_name FROM matches WHERE YEAR  =  2016",
+      "generated_sql": "SKIPPED - Too complex",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": false,
+      "time_taken": 0,
+      "error": "Skipped due to complexity",
+      "method": "skipped"
+    },
+    {
+      "db_id": "wta_1",
+      "question": "What is the code of the country with the most players?",
+      "gold_sql": "SELECT country_code FROM players GROUP BY country_code ORDER BY count(*) DESC LIMIT 1",
+      "generated_sql": "SELECT T1.country_code\nFROM players AS T1\nJOIN (\n  SELECT T2.country_code, COUNT(*) as total_players\n  FROM players AS T2\n  GROUP BY T2.country_code\n) AS T3\nON T1.country_code = T3.country_code\nORDER BY T3.total_players DESC\nLIMIT 1;",
+      "method": "direct",
+      "exact_match": false,
+      "exec_match": true,
+      "execution_success": true,
+      "time_taken": 12.386889457702637,
+      "error": null,
+      "mcts_used": false
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold_sql": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "generated_sql": "SELECT COUNT(DISTINCT Student.StuID) \nFROM Student \nJOIN Has_Pet ON Student.StuID = Has_Pet.StuID \nJOIN Pets ON Has_Pet.PetID = Pets.PetID \nWHERE Student.Sex = 'F' AND Pets.PetType = 'dog'",
+      "method": "mcts",
+      "exact_match": false,
+      "exec_match": false,
+      "execution_success": true,
+      "time_taken": 3.5887930393218994,
+      "error": null,
+      "mcts_used": true
+    }
+  ],
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 20,
+  "mcts_usage_rate": 0.6,
+  "direct_vs_mcts": {
+    "direct_count": 5,
+    "mcts_count": 9,
+    "direct_accuracy": 1.0,
+    "mcts_accuracy": 0.3333333333333333,
+    "direct_success_rate": 1.0,
+    "mcts_success_rate": 1.0
+  }
+}

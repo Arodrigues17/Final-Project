@@ -24,6 +24,15 @@ UCB_CONSTANT = 1.4  # Exploration-exploitation trade-off constant
 MAX_DEPTH = 15  # Maximum depth for the search tree
 MAX_CHILDREN = 8  # Maximum children per node
 
+# --- add below existing imports ---
+TOKEN_PATTERN = re.compile(r'\w+')
+COMPLEX_KEYWORDS = {'JOIN', 'GROUP BY', 'HAVING', 'UNION', 'EXISTS'}
+SIMPLE_PATTERNS = [
+    re.compile(r'^SELECT\s+\*\s+FROM\s+\w+;?$', re.IGNORECASE),
+    re.compile(r'^SELECT\s+\w+\s+FROM\s+\w+;?$', re.IGNORECASE),
+]
+# --- end additions ---
+
 class SQLNode:
     """
     A node in the MCTS tree representing a partial or complete SQL query
@@ -119,49 +128,112 @@ class MCTSRARP(RARP):
         direct_result = super().generate_sql(query, include_samples)
         direct_sql = direct_result["sql"]
         
+        # --- simple‐NL bypass: never run MCTS on trivial 1-table queries regardless of validation ---
+        is_simple_query = len(query.split()) < 6 and all(
+            kw not in query.lower() 
+            for kw in ["group", "average", "most", "least", "order", "having", "count", "more", "than"]
+        )
+        if is_simple_query:
+            return {
+                "sql": direct_sql,
+                "method": "direct",
+                "time_taken": time.time() - start_time,
+                "mcts_used": False
+            }
+        # --- end bypass ---
+        
         # 2. Check if the direct SQL is valid
         is_valid, error_msg = self.validate_sql(direct_sql)
         
-        # Force MCTS for a percentage of queries to ensure it gets used
-        force_mcts = random.random() < 0.3  # Try MCTS for 30% of queries regardless
+        # Apply a more sophisticated complexity check based on both query and SQL structure
+        is_simple_operation = (
+            # Simple count queries
+            ("how many" in query.lower() and "COUNT" in direct_sql.upper()) or
+            # Simple attribute queries with filtering
+            (len(query.split()) < 10 and "WHERE" in direct_sql.upper() and direct_sql.upper().count("JOIN") <= 1) or
+            # Very basic lookup queries
+            (len(query.split()) < 8 and direct_sql.upper().count("JOIN") == 0)
+        )
+        
+        # Return direct SQL if it's valid and simple, avoiding unnecessary MCTS
+        if is_valid and is_simple_operation:
+            return {
+                "sql": direct_sql,
+                "method": "direct",
+                "time_taken": time.time() - start_time,
+                "mcts_used": False
+            }
+        
+        # Force MCTS less often for non-complex queries (reduced from 50% to 30% chance)
+        complex_query = self._is_complex_query(query)
+        force_mcts = random.random() < 0.3 and not is_simple_operation  
         
         # Use MCTS if direct generation failed OR it's a complex query OR we're forcing MCTS
-        if not is_valid or self._is_complex_query(query) or force_mcts:
+        if not is_valid or complex_query or force_mcts:
+            reason = 'Invalid direct SQL' if not is_valid else 'Complex query' if complex_query else 'Forced MCTS'
             print(f"Using MCTS for query: {query}")
-            print(f"Reason: {'Invalid direct SQL' if not is_valid else 'Complex query' if self._is_complex_query(query) else 'Forced MCTS'}")
+            print(f"Reason: {reason}")
+            
+            if not is_valid:
+                print(f"SQL Validation Error: {error_msg}")
+            
+            # Set a timeout for the entire MCTS process - increased for better results
+            mcts_timeout = 90  # Maximum seconds for MCTS (increased from 60)
             mcts_start_time = time.time()
-            mcts_sql = self._mcts_search(query, direct_sql)
             
-            # 4. Validate the MCTS-generated SQL
-            is_valid_mcts, error_msg_mcts = self.validate_sql(mcts_sql)
-            
-            # 5. Choose the best SQL between direct and MCTS
-            if is_valid_mcts:
-                # If both are valid, choose based on execution results
-                if is_valid:
-                    direct_exec_success, direct_results = self.execute_sql(direct_sql)
-                    mcts_exec_success, mcts_results = self.execute_sql(mcts_sql)
-                    
-                    if direct_exec_success and mcts_exec_success:
-                        # Compare result sets if both execute successfully
-                        # Use the one with more detailed results or better self-consistency
-                        direct_quality = self._evaluate_sql_quality(direct_sql, direct_results)
-                        mcts_quality = self._evaluate_sql_quality(mcts_sql, mcts_results)
+            try:
+                mcts_sql = self._mcts_search(query, direct_sql)
+                
+                # Check if we exceeded the timeout
+                if time.time() - mcts_start_time > mcts_timeout:
+                    print(f"MCTS took too long ({time.time() - mcts_start_time:.1f}s) - returning direct SQL")
+                    return {
+                        "sql": direct_sql,
+                        "method": "direct",
+                        "time_taken": time.time() - start_time,
+                        "mcts_used": False,
+                        "mcts_timeout": True
+                    }
+                
+                # 4. Validate the MCTS-generated SQL
+                is_valid_mcts, error_msg_mcts = self.validate_sql(mcts_sql)
+                
+                # 5. Choose the best SQL between direct and MCTS
+                if is_valid_mcts:
+                    # If both are valid, choose based on execution results
+                    if is_valid:
+                        direct_exec_success, direct_results = self.execute_sql(direct_sql)
+                        mcts_exec_success, mcts_results = self.execute_sql(mcts_sql)
                         
-                        print(f"Direct SQL quality: {direct_quality:.3f}, MCTS SQL quality: {mcts_quality:.3f}")
-                        
-                        final_sql = mcts_sql if mcts_quality > direct_quality else direct_sql
-                        method = "mcts" if mcts_quality > direct_quality else "direct"
-                    elif mcts_exec_success:
+                        if direct_exec_success and mcts_exec_success:
+                            # Compare result sets if both execute successfully
+                            # Use the one with more detailed results or better self-consistency
+                            direct_quality = self._evaluate_sql_quality(direct_sql, direct_results)
+                            mcts_quality = self._evaluate_sql_quality(mcts_sql, mcts_results)
+                            
+                            print(f"Direct SQL quality: {direct_quality:.3f}, MCTS SQL quality: {mcts_quality:.3f}")
+                            
+                            # Be more permissive about using MCTS results
+                            if mcts_quality >= direct_quality - 0.05:  # Allow MCTS if it's close or better
+                                final_sql = mcts_sql
+                                method = "mcts"
+                            else:
+                                final_sql = direct_sql
+                                method = "direct"
+                        elif mcts_exec_success:
+                            final_sql = mcts_sql
+                            method = "mcts"
+                        else:
+                            final_sql = direct_sql
+                            method = "direct"
+                    else:
                         final_sql = mcts_sql
                         method = "mcts"
-                    else:
-                        final_sql = direct_sql
-                        method = "direct"
                 else:
-                    final_sql = mcts_sql
-                    method = "mcts"
-            else:
+                    final_sql = direct_sql
+                    method = "direct"
+            except Exception as e:
+                print(f"Error in MCTS process: {str(e)}")
                 final_sql = direct_sql
                 method = "direct"
             
@@ -173,9 +245,9 @@ class MCTSRARP(RARP):
                 "time_taken": total_time,
                 "mcts_used": method == "mcts",
                 "direct_sql": direct_sql,
-                "mcts_sql": mcts_sql,
+                "mcts_sql": mcts_sql if 'mcts_sql' in locals() else "ERROR",
                 "direct_valid": is_valid,
-                "mcts_valid": is_valid_mcts
+                "mcts_valid": is_valid_mcts if 'is_valid_mcts' in locals() else False
             }
         else:
             # For simpler queries, just return the direct result
@@ -188,47 +260,31 @@ class MCTSRARP(RARP):
     
     def _is_complex_query(self, query: str) -> bool:
         """
-        Determine if a query is complex enough to warrant MCTS
-        
-        Args:
-            query: The natural language query
-            
-        Returns:
-            True if the query is complex, False otherwise
+        Determine if a query is complex enough to warrant MCTS:
+        1. Whitelist truly trivial patterns
+        2. Bypass very short queries
+        3. Require ≥2 distinct structural keywords
         """
-        # More comprehensive complexity indicators
-        complexity_indicators = [
-            "group", "aggregate", "average", "count", "most", "least", "maximum", "minimum",
-            "more than", "less than", "between", "not", "except", "top", "bottom", "all",
-            "order", "rank", "join", "where", "having", "nested", "compare", "correlation",
-            "percentage", "proportion", "number of", "highest", "lowest", "greater", "smaller"
-        ]
-        
-        lower_query = query.lower()
-        
-        # Check for presence of complexity indicators
-        indicator_count = sum(1 for indicator in complexity_indicators if indicator in lower_query)
-        if indicator_count >= 2:
-            return True
-        
-        # Check for question words that often indicate complex queries
-        question_indicators = ["how many", "which", "what is the", "find the", "list all"]
-        if any(indicator in lower_query for indicator in question_indicators):
-            return True
-        
-        # Check length - longer queries tend to be more complex
-        if len(query.split()) > 10:
-            return True
-        
-        # Count database entities mentioned - more entities often mean more complex queries
-        schema_entities = set(table.lower() for table in self.schema.tables)
-        schema_entities.update(column.lower() for table in self.schema.tables for column in self.schema.column_names_original[table])
-        
-        entity_count = sum(1 for entity in schema_entities if entity in lower_query)
-        if entity_count >= 3:
-            return True
-        
-        return False
+        # 1. Whitelist simple one-table selects
+        if any(pat.match(query) for pat in SIMPLE_PATTERNS):
+            return False
+
+        # 2. Short NL queries are likely trivial
+        toks = TOKEN_PATTERN.findall(query.upper())
+        if len(toks) < 10:
+            # However, counting queries with filters might be complex enough for MCTS,
+            # even if they have fewer tokens
+            has_count_indicator = any(word in query.lower() for word in 
+                ['how many', 'count', 'number of'])
+            has_filter_indicator = any(word in query.lower() for word in 
+                ['where', 'with', 'that have', 'from'])
+            
+            if has_count_indicator and has_filter_indicator and 'join' in query.lower():
+                return True
+            return False
+
+        # 3. Require at least two distinct complex keywords
+        return len(set(toks) & COMPLEX_KEYWORDS) >= 2
     
     def _mcts_search(self, nl_query: str, initial_sql: str) -> str:
         """
@@ -242,6 +298,10 @@ class MCTSRARP(RARP):
             The best SQL query found by MCTS
         """
         try:
+            # Set a maximum timeout for the entire MCTS process - increased for better results
+            max_search_time = 60  # Maximum seconds to spend on MCTS (increased from 30)
+            start_time = time.time()
+            
             # 1. Create the root node with initial SQL
             root = SQLNode(state=initial_sql)
             
@@ -253,8 +313,30 @@ class MCTSRARP(RARP):
                 print("No actions generated, returning initial SQL")
                 return initial_sql
             
-            # 3. Run MCTS for specified number of iterations
-            for i in range(self.mcts_iterations):
+            # Dynamically adjust iterations based on query complexity
+            query_words = len(nl_query.split())
+            complexity_indicators = ["group", "count", "most", "least", "order", "having", "more than"]
+            complexity_score = sum(1 for indicator in complexity_indicators if indicator.lower() in nl_query.lower())
+            
+            # More complex formula for determining iterations
+            adjusted_iterations = min(self.mcts_iterations, 
+                                     max(5, query_words // 2 + complexity_score * 3))
+            
+            print(f"Adjusted MCTS iterations to {adjusted_iterations} based on query complexity")
+            
+            # Track best SQL found so far
+            best_sql = initial_sql
+            best_reward = 0
+            early_stop_threshold = 0.9  # Increased threshold for early stopping (more conservative)
+            min_iterations = max(3, adjusted_iterations // 2)  # Minimum iterations before early stopping
+            
+            # 3. Run MCTS for specified number of iterations or until timeout
+            for i in range(adjusted_iterations):
+                # Check timeout
+                if time.time() - start_time > max_search_time:
+                    print(f"MCTS timeout after {i} iterations")
+                    break
+                    
                 try:
                     # Selection - find the most promising node
                     node = self._select(root)
@@ -266,17 +348,34 @@ class MCTSRARP(RARP):
                     # Simulation - simulate from the expanded node
                     reward = self._simulate(node, nl_query)
                     
+                    # Track best solution found
+                    if reward > best_reward:
+                        best_reward = reward
+                        if node.state != initial_sql:  # Only update if it's not the initial SQL
+                            best_sql = node.state
+                            print(f"Found better SQL (reward: {reward:.3f})")
+                    
+                    # Early stopping if we find a very good solution, but only after minimum iterations
+                    if i >= min_iterations and reward > early_stop_threshold:
+                        print(f"Early stopping at iteration {i} - found high-quality SQL (reward: {reward:.3f})")
+                        break
+                    
                     # Backpropagation - update node values
                     self._backpropagate(node, reward)
                 except Exception as e:
                     print(f"Error in MCTS iteration {i}: {str(e)}")
                     continue
             
-            # 4. Select the best SQL from the children of the root
-            best_child = self._get_best_child(root, exploration_weight=0)
-            best_sql = best_child.state if best_child else initial_sql
+            # 4. Select the best SQL - either from MCTS or what we tracked
+            if best_reward > 0.6:  # Lowered threshold to prefer tracked best solution
+                return best_sql
+            else:
+                # Fall back to the standard MCTS selection
+                best_child = self._get_best_child(root, exploration_weight=0)
+                if best_child and best_child.state != initial_sql:
+                    return best_child.state
+                return best_sql  # fall back to our tracked best
             
-            return best_sql
         except Exception as e:
             print(f"Error in MCTS search: {str(e)}")
             return initial_sql
@@ -326,88 +425,77 @@ class MCTSRARP(RARP):
         Returns:
             List of potential refinement actions
         """
-        # More specific prompt for better refinements
-        prompt = f"""
-        I need to generate several variations of this SQL query to better match the question.
+        # Fast generation of simple variants without calling LLM
+        # This is used to quickly generate candidates without expensive LLM calls
+        fast_variants = []
         
-        Question: {nl_query}
-        Current SQL: {current_sql}
+        # Always add these fast variants to avoid getting stuck
+        if "ORDER BY" not in current_sql.upper():
+            fast_variants.append(current_sql + " ORDER BY 1")
+        if "LIMIT" not in current_sql.upper():
+            fast_variants.append(current_sql + " LIMIT 10")
         
-        Generate {MAX_CHILDREN} different SQL variations. For each variation:
-        1. Fix any syntax errors
-        2. Check if any columns or conditions are missing
-        3. Ensure JOIN conditions are correct
-        4. Consider adding/modifying GROUP BY, ORDER BY, or aggregation functions
+        # Only proceed with expensive LLM call if we have few variants
+        # or randomly (to ensure we sometimes do deep exploration)
+        deep_explore = random.random() < 0.3  # 30% chance to do deep exploration
         
-        Be creative but ensure each query is syntactically valid. Don't just make minor changes.
-        Each query should be a complete SQL statement that addresses the user's question.
-        
-        Format your response exactly like this:
-        VARIATION 1:
-        [Complete SQL query 1]
-        
-        VARIATION 2:
-        [Complete SQL query 2]
-        
-        And so on...
-        """
-        
-        # Call the LLM model (using the same interface as RARP)
-        response = self._call_llm(prompt)
-        
-        # Extract SQL queries with more reliable pattern
-        refined_sqls = []
-        pattern = r"VARIATION \d+:\s*(.*?)(?=VARIATION \d+:|$)"
-        matches = re.finditer(pattern, response, re.DOTALL)
-        
-        for match in matches:
-            sql = match.group(1).strip().rstrip(';')
-            if sql and sql != current_sql:
-                refined_sqls.append(sql)
-        
-        # Ensure we have at least some variations
-        if not refined_sqls:
-            # Create simple variants if LLM didn't generate any
-            select_pattern = r"SELECT\s+(.*?)\s+FROM"
-            where_pattern = r"WHERE\s+(.*?)(?:ORDER BY|GROUP BY|LIMIT|$)"
-            
-            # Try variations like adding LIMIT, changing ORDER BY, etc.
-            if "ORDER BY" not in current_sql.upper():
-                refined_sqls.append(current_sql + " ORDER BY 1")
-            if "LIMIT" not in current_sql.upper():
-                refined_sqls.append(current_sql + " LIMIT 10")
-            if "WHERE" in current_sql.upper():
-                # Try removing a condition
-                try:
-                    where_match = re.search(where_pattern, current_sql, re.IGNORECASE)
-                    if where_match:
-                        conditions = where_match.group(1).split("AND")
-                        if len(conditions) > 1:
-                            new_where = " AND ".join(conditions[:-1])
-                            new_sql = re.sub(where_pattern, f"WHERE {new_where}", current_sql, flags=re.IGNORECASE)
-                            refined_sqls.append(new_sql)
-                except:
-                    pass
-            
-            # If still empty, add some reversed order or additional limit variants
-            if len(refined_sqls) < 2:
-                if "ORDER BY" in current_sql.upper():
-                    # Try reversing the order
-                    if "DESC" in current_sql.upper():
-                        refined_sqls.append(current_sql.replace("DESC", "ASC"))
-                    else:
-                        refined_sqls.append(current_sql.replace("ORDER BY", "ORDER BY DESC"))
-                if "LIMIT" in current_sql.upper():
-                    # Try changing the limit
-                    limit_pattern = r"LIMIT\s+(\d+)"
-                    limit_match = re.search(limit_pattern, current_sql, re.IGNORECASE)
-                    if limit_match:
-                        current_limit = int(limit_match.group(1))
-                        new_limit = current_limit * 2
-                        refined_sqls.append(re.sub(limit_pattern, f"LIMIT {new_limit}", current_sql, flags=re.IGNORECASE))
-        
-        # Limit number of refinements
-        return refined_sqls[:MAX_CHILDREN]
+        if len(fast_variants) < 2 or deep_explore:
+            try:
+                # More specific prompt for better refinements
+                prompt = f"""
+                I need quick SQL variations for this question.
+                
+                Question: {nl_query}
+                Current SQL: {current_sql}
+                
+                Generate 3 different SQL variations. For each:
+                1. Fix any syntax errors
+                2. Add or modify WHERE conditions
+                3. Consider adding GROUP BY or ORDER BY
+                
+                Format as:
+                VARIATION 1:
+                [SQL query 1]
+                
+                VARIATION 2:
+                [SQL query 2]
+                
+                VARIATION 3:
+                [SQL query 3]
+                """
+                
+                # Time the LLM call to prevent getting stuck
+                start_time = time.time()
+                response = self._call_llm(prompt)
+                elapsed = time.time() - start_time
+                
+                if elapsed > 10:  # If LLM call took more than 10 seconds
+                    print(f"Warning: LLM call took {elapsed:.1f}s - using fast variants only")
+                    return fast_variants[:MAX_CHILDREN]
+                
+                # Extract SQL queries with more reliable pattern
+                refined_sqls = []
+                pattern = r"VARIATION \d+:\s*(.*?)(?=VARIATION \d+:|$)"
+                matches = re.finditer(pattern, response, re.DOTALL)
+                
+                for match in matches:
+                    sql = match.group(1).strip().rstrip(';')
+                    if sql and sql != current_sql:
+                        refined_sqls.append(sql)
+                
+                # Combine LLM-generated and fast variants
+                all_variants = refined_sqls + fast_variants
+                
+                # Limit number of refinements
+                return all_variants[:MAX_CHILDREN]
+                
+            except Exception as e:
+                print(f"Error generating refinements: {str(e)}")
+                # Fall back to fast variants
+                return fast_variants[:MAX_CHILDREN]
+        else:
+            # Just use the fast variants to avoid expensive LLM calls
+            return fast_variants[:MAX_CHILDREN]
     
     def _select(self, node: SQLNode) -> SQLNode:
         """
@@ -583,37 +671,77 @@ class MCTSRARP(RARP):
         size_score = 0.0
         
         if result_size == 0:
-            size_score = 0.1  # Empty result is not ideal but not the worst
+            size_score = 0.05  # Reduced score for empty results
         elif 1 <= result_size <= 100:
-            size_score = min(0.4, 0.1 + 0.3 * (1.0 - abs(result_size - 5) / 100.0))
+            # Prefer results with 1-10 rows as more likely to be correct for typical questions
+            if 1 <= result_size <= 10:
+                size_score = 0.2 + 0.2 * (1.0 - abs(result_size - 5) / 10.0)
+            else:
+                size_score = 0.2 * (1.0 - (result_size - 10) / 90.0)
         else:
-            size_score = 0.1  # Too many results
+            size_score = 0.05  # Too many results
         
-        # Check SQL structure quality
+        # Check SQL structural quality
         structure_score = 0.0
         
-        # Reward for using important clauses
-        important_clauses = ["SELECT", "FROM", "WHERE", "GROUP BY", "HAVING", "ORDER BY"]
-        used_clauses = sum(1 for clause in important_clauses if f" {clause.upper()} " in f" {sql.upper()} ")
-        structure_score += 0.05 * used_clauses
+        # Reward for using important clauses - more weight on GROUP BY and proper filtering
+        important_clauses = {
+            "SELECT": 0.03,
+            "FROM": 0.03,
+            "WHERE": 0.05,
+            "GROUP BY": 0.07,
+            "HAVING": 0.07,
+            "ORDER BY": 0.05,
+            "LIMIT": 0.03,
+            "JOIN": 0.07
+        }
+        
+        for clause, weight in important_clauses.items():
+            if f" {clause.upper()} " in f" {sql.upper()} ":
+                structure_score += weight
         
         # Reward for join conditions
         if "JOIN" in sql.upper() and "ON" in sql.upper():
             structure_score += 0.1
+            
+        # Reward for column specification (not using *)
+        if "SELECT *" not in sql.upper():
+            structure_score += 0.05
+        
+        # Check for aggregation functions (common in complex queries)
+        agg_functions = ["COUNT", "SUM", "AVG", "MIN", "MAX", "GROUP_CONCAT"]
+        for func in agg_functions:
+            if f"{func}(" in sql.upper():
+                structure_score += 0.03
         
         # Penalize for potential issues
         issues = [
-            "SELECT *",  # Using SELECT * is often not ideal
-            "WHERE 1=1",  # Unnecessary condition
-            "CROSS JOIN WITHOUT ON",  # Cross joins might be unintentional
+            "SELECT * FROM", # Using SELECT * is often not ideal
+            "WHERE 1=1", # Unnecessary condition
+            "WHERE 1 = 1",
+            "CROSS JOIN", # Cross joins might be unintentional
+            "FROM TABLE" # Generic table name
         ]
         
-        # Count number of issues
-        issue_count = sum(1 for issue in issues if issue.upper() in sql.upper())
-        issue_penalty = 0.05 * issue_count
+        issue_penalty = 0.0
+        for issue in issues:
+            if issue.upper() in sql.upper():
+                issue_penalty += 0.05
+        
+        # Reward for specific SQL patterns that often appear in gold queries
+        patterns = [
+            ("GROUP BY.*HAVING", 0.1),  # Group by with having is a common complex pattern
+            ("ORDER BY.*LIMIT", 0.07),  # Order by with limit is a common complex pattern
+            ("JOIN.*JOIN", 0.07)        # Multiple joins indicate more complex queries
+        ]
+        
+        pattern_score = 0.0
+        for pattern, weight in patterns:
+            if re.search(pattern, sql.upper()):
+                pattern_score += weight
         
         # Final score
-        total_score = base_score + size_score + structure_score - issue_penalty
+        total_score = base_score + size_score + structure_score + pattern_score - issue_penalty
         return min(1.0, max(0.0, total_score))
     
     def _extract_keywords(self, query: str) -> List[str]:
@@ -668,23 +796,46 @@ class MCTSRARP(RARP):
         # Let's check for common method names:
         
         try:
+            # Get schema info safely
+            schema_info = ""
+            try:
+                if hasattr(self, 'schema') and hasattr(self.schema, 'get_schema_str'):
+                    schema_info = self.schema.get_schema_str()
+            except Exception as e:
+                print(f"Warning: couldn't get schema info: {str(e)}")
+            
+            # Include schema info in prompt if available
+            full_prompt = prompt
+            if schema_info:
+                full_prompt = f"""
+                Database Schema:
+                {schema_info}
+                
+                {prompt}
+                """
+            
             # Try the standard method for getting SQL from RARP
             # This assumes the parent class has a _get_response_from_model method
             if hasattr(self, '_get_response_from_model'):
-                return self._get_response_from_model(prompt)
+                return self._get_response_from_model(full_prompt)
             # Try alternative method names that might exist in RARP
             elif hasattr(self, '_call_model'):
-                return self._call_model(prompt)
+                return self._call_model(full_prompt)
             elif hasattr(self, 'call_model'):
-                return self.call_model(prompt)
+                return self.call_model(full_prompt)
             elif hasattr(self, 'query_model'):
-                return self.query_model(prompt)
+                return self.query_model(full_prompt)
             elif hasattr(self, 'generate'):
-                return self.generate(prompt)
-            else:
+                return self.generate(full_prompt)
+            elif hasattr(self, '_generate_sql_from_model'):
+                return self._generate_sql_from_model(full_prompt)
+            elif hasattr(super(), 'generate_sql'):
                 # As a last resort, use the generate_sql method but extract just the SQL
-                result = super().generate_sql(prompt, include_samples=False)
+                result = super().generate_sql(full_prompt, include_samples=False)
                 return result.get("sql", "")
+            else:
+                print("Warning: couldn't find any method to call the LLM")
+                return "SELECT * FROM table LIMIT 1"
         except Exception as e:
             print(f"Error calling LLM: {str(e)}")
             # Return an empty string or some default SQL if there's an error
@@ -781,12 +932,13 @@ def evaluate_query_mcts(example: Dict[str, Any], model: str, include_samples: bo
         }
 
 
+# Example usage as a simple demo
 if __name__ == "__main__":
-    # Example of how to use MCTSRARP
-    db_id = "restaurant"
-    model = "llama-3.1-8b-instant"
     query = "Find the name of the restaurant with the most number of reviews"
+    model = "llama-3.1-8b-instant"
+    db_id = "restaurant"
     
+    # Example of how to use MCTSRARP
     rarp = MCTSRARP(db_id, model)
     result = rarp.generate_sql(query)
     

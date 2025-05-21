@@ -1,0 +1,166 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 1034,
+  "exact_match_accuracy": 0.007736943907156673,
+  "execution_match_accuracy": 0.041586073500967116,
+  "execution_success_rate": 0.05899419729206963,
+  "error_rate": 0.06866537717601548,
+  "average_time_per_query": 3.0413701658783845,
+  "total_time": 3144.7767515182495,
+  "per_database_accuracy": {
+    "concert_singer": {
+      "exact_match_accuracy": 0.022222222222222223,
+      "execution_match_accuracy": 0.5333333333333333,
+      "execution_success_rate": 0.7777777777777778,
+      "mcts_usage_rate": 0.5111111111111111,
+      "total_examples": 45
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.09523809523809523,
+      "execution_match_accuracy": 0.30952380952380953,
+      "execution_success_rate": 0.4523809523809524,
+      "mcts_usage_rate": 0.19047619047619047,
+      "total_examples": 42
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 92
+    },
+    "flight_2": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0125,
+      "execution_success_rate": 0.0125,
+      "mcts_usage_rate": 0.0125,
+      "total_examples": 80
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 38
+    },
+    "cre_Doc_Template_Mgt": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 84
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.03333333333333333,
+      "execution_match_accuracy": 0.03333333333333333,
+      "execution_success_rate": 0.03333333333333333,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 30
+    },
+    "museum_visit": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 18
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 62
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 16
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 78
+    },
+    "tvshow": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 62
+    },
+    "poker_player": {
+      "exact_match_accuracy": 0.025,
+      "execution_match_accuracy": 0.025,
+      "execution_success_rate": 0.025,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 40
+    },
+    "voter_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 15
+    },
+    "world_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 120
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 40
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.03571428571428571,
+      "execution_success_rate": 0.05357142857142857,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 56
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 82
+    },
+    "singer": {
+      "exact_match_accuracy": 0.03333333333333333,
+      "execution_match_accuracy": 0.03333333333333333,
+      "execution_success_rate": 0.03333333333333333,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 30
+    },
+    "real_estate_properties": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    }
+  },
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 20,
+  "mcts_usage_rate": 0.030947775628626693,
+  "direct_vs_mcts": {
+    "direct_count": 931,
+    "mcts_count": 32,
+    "direct_accuracy": 0.021482277121374866,
+    "mcts_accuracy": 0.71875,
+    "direct_success_rate": 0.031149301825993556,
+    "mcts_success_rate": 1.0
+  }
+}

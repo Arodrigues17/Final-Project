@@ -98,7 +98,7 @@ def results_match(results1: List[Tuple], results2: List[Tuple]) -> bool:
     
     return set1 == set2
 
-def evaluate_query(example: Dict[str, Any], model: str, include_samples: bool, few_shot_examples: List[Dict[str, Any]] = None, use_mcts: bool = True, mcts_iterations: int = 20, debug: bool = False) -> Dict[str, Any]:
+def evaluate_query(example: Dict[str, Any], model: str, include_samples: bool, few_shot_examples: List[Dict[str, Any]] = None, use_mcts: bool = True, mcts_iterations: int = 50, debug: bool = False) -> Dict[str, Any]:
     """Evaluate a single query using MCTS-RARP if requested"""
     start_time = time.time()
     query = example["question"]
@@ -263,7 +263,7 @@ def evaluate_dataset(dataset_file: str, model: str,
                     num_processes: int = 1,
                     num_few_shot: int = 0,
                     use_mcts: bool = True,
-                    mcts_iterations: int = 20,
+                    mcts_iterations: int = 50,
                     debug: bool = False) -> Dict[str, Any]:
     """Evaluate MCTS-RARP on a dataset"""
     # Load dataset
@@ -537,7 +537,13 @@ def main():
     parser.add_argument("--compare", action="store_true", 
                       help="Run both MCTS and non-MCTS versions for comparison")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    parser.add_argument("--fast", action="store_true", help="Use fast mode with fewer iterations and timeouts")
     args = parser.parse_args()
+    
+    # Apply fast mode settings if requested
+    if args.fast:
+        args.mcts_iterations = 10
+        print("Fast mode enabled - using 10 MCTS iterations with timeouts")
     
     combined_results = {
         "model": args.model,

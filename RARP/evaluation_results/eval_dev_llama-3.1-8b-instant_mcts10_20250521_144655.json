@@ -1,0 +1,138 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 50,
+  "exact_match_accuracy": 0.1,
+  "execution_match_accuracy": 0.64,
+  "execution_success_rate": 0.88,
+  "error_rate": 0.12,
+  "average_time_per_query": 26.21415404319763,
+  "total_time": 1310.7077021598816,
+  "per_database_accuracy": {
+    "flight_2": {
+      "exact_match_accuracy": 0.2857142857142857,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 7
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.75,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 4
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.6666666666666666,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 3
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.16666666666666666,
+      "execution_success_rate": 0.6666666666666666,
+      "mcts_usage_rate": 0.16666666666666666,
+      "total_examples": 6
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 1.0,
+      "total_examples": 1
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 6
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.5,
+      "total_examples": 2
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 2
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 0.3333333333333333,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 3
+    },
+    "concert_singer": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 1
+    },
+    "cre_Doc_Template_Mgt": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.6666666666666666,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.3333333333333333,
+      "total_examples": 3
+    },
+    "voter_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 2
+    },
+    "world_1": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 0.6666666666666666,
+      "mcts_usage_rate": 0.16666666666666666,
+      "total_examples": 6
+    },
+    "tvshow": {
+      "exact_match_accuracy": 0.0,
+      "execution_match_accuracy": 1.0,
+      "execution_success_rate": 1.0,
+      "mcts_usage_rate": 0.0,
+      "total_examples": 2
+    }
+  },
+  "has_gold_sql": true,
+  "few_shot_examples": null,
+  "use_mcts": true,
+  "mcts_iterations": 10,
+  "mcts_usage_rate": 0.1,
+  "direct_vs_mcts": {
+    "direct_count": 39,
+    "mcts_count": 5,
+    "direct_accuracy": 0.7435897435897436,
+    "mcts_accuracy": 0.6,
+    "direct_success_rate": 1.0,
+    "mcts_success_rate": 1.0
+  }
+}

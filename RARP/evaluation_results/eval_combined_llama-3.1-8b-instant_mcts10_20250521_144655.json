@@ -1,0 +1,33 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "datasets": [
+    "dev.json"
+  ],
+  "few_shot_count": 0,
+  "use_mcts": true,
+  "mcts_iterations": 10,
+  "per_dataset_results": {
+    "dev.json": {
+      "exact_match_accuracy": 0.1,
+      "execution_match_accuracy": 0.64,
+      "execution_success_rate": 0.88,
+      "error_rate": 0.12,
+      "average_time_per_query": 26.21415404319763,
+      "total_examples": 50,
+      "mcts_usage_rate": 0.1
+    }
+  },
+  "overall_metrics": {
+    "total_examples": 50,
+    "exact_match_count": 5,
+    "exec_match_count": 32,
+    "exec_success_count": 44,
+    "error_count": 6,
+    "total_time": 1310.7077021598816,
+    "exact_match_accuracy": 0.1,
+    "execution_match_accuracy": 0.64,
+    "execution_success_rate": 0.88,
+    "error_rate": 0.12,
+    "average_time_per_query": 26.21415404319763
+  }
+}
