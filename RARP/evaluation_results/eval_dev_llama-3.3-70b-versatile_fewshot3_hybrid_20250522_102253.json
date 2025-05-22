@@ -1,0 +1,139 @@
+{
+  "model": "llama-3.3-70b-versatile",
+  "dataset": "dev.json",
+  "total_examples": 1034,
+  "exact_match_accuracy": 0.269825918762089,
+  "execution_match_accuracy": 0.7330754352030948,
+  "execution_success_rate": 0.9264990328820116,
+  "error_rate": 0.06866537717601548,
+  "average_time_per_query": 0.8298578469850109,
+  "total_time": 858.0730137825012,
+  "per_database_accuracy": {
+    "concert_singer": {
+      "exact_match_accuracy": 0.24444444444444444,
+      "execution_match_accuracy": 0.7555555555555555,
+      "execution_success_rate": 0.8888888888888888,
+      "total_examples": 45
+    },
+    "pets_1": {
+      "exact_match_accuracy": 0.2619047619047619,
+      "execution_match_accuracy": 0.6666666666666666,
+      "execution_success_rate": 0.9285714285714286,
+      "total_examples": 42
+    },
+    "car_1": {
+      "exact_match_accuracy": 0.18478260869565216,
+      "execution_match_accuracy": 0.6521739130434783,
+      "execution_success_rate": 0.9456521739130435,
+      "total_examples": 92
+    },
+    "flight_2": {
+      "exact_match_accuracy": 0.225,
+      "execution_match_accuracy": 0.8125,
+      "execution_success_rate": 0.925,
+      "total_examples": 80
+    },
+    "employee_hire_evaluation": {
+      "exact_match_accuracy": 0.5263157894736842,
+      "execution_match_accuracy": 0.8421052631578947,
+      "execution_success_rate": 0.9473684210526315,
+      "total_examples": 38
+    },
+    "cre_Doc_Template_Mgt": {
+      "exact_match_accuracy": 0.32142857142857145,
+      "execution_match_accuracy": 0.8571428571428571,
+      "execution_success_rate": 0.9285714285714286,
+      "total_examples": 84
+    },
+    "course_teach": {
+      "exact_match_accuracy": 0.4,
+      "execution_match_accuracy": 0.9333333333333333,
+      "execution_success_rate": 1.0,
+      "total_examples": 30
+    },
+    "museum_visit": {
+      "exact_match_accuracy": 0.4444444444444444,
+      "execution_match_accuracy": 0.8333333333333334,
+      "execution_success_rate": 0.9444444444444444,
+      "total_examples": 18
+    },
+    "wta_1": {
+      "exact_match_accuracy": 0.3225806451612903,
+      "execution_match_accuracy": 0.5806451612903226,
+      "execution_success_rate": 0.9032258064516129,
+      "total_examples": 62
+    },
+    "battle_death": {
+      "exact_match_accuracy": 0.3125,
+      "execution_match_accuracy": 0.75,
+      "execution_success_rate": 0.875,
+      "total_examples": 16
+    },
+    "student_transcripts_tracking": {
+      "exact_match_accuracy": 0.2564102564102564,
+      "execution_match_accuracy": 0.6410256410256411,
+      "execution_success_rate": 0.9487179487179487,
+      "total_examples": 78
+    },
+    "tvshow": {
+      "exact_match_accuracy": 0.1774193548387097,
+      "execution_match_accuracy": 0.7580645161290323,
+      "execution_success_rate": 0.9032258064516129,
+      "total_examples": 62
+    },
+    "poker_player": {
+      "exact_match_accuracy": 0.4,
+      "execution_match_accuracy": 0.975,
+      "execution_success_rate": 1.0,
+      "total_examples": 40
+    },
+    "voter_1": {
+      "exact_match_accuracy": 0.3333333333333333,
+      "execution_match_accuracy": 0.8666666666666667,
+      "execution_success_rate": 0.9333333333333333,
+      "total_examples": 15
+    },
+    "world_1": {
+      "exact_match_accuracy": 0.125,
+      "execution_match_accuracy": 0.575,
+      "execution_success_rate": 0.9166666666666666,
+      "total_examples": 120
+    },
+    "orchestra": {
+      "exact_match_accuracy": 0.55,
+      "execution_match_accuracy": 0.875,
+      "execution_success_rate": 0.925,
+      "total_examples": 40
+    },
+    "network_1": {
+      "exact_match_accuracy": 0.26785714285714285,
+      "execution_match_accuracy": 0.5892857142857143,
+      "execution_success_rate": 0.8571428571428571,
+      "total_examples": 56
+    },
+    "dog_kennels": {
+      "exact_match_accuracy": 0.12195121951219512,
+      "execution_match_accuracy": 0.7317073170731707,
+      "execution_success_rate": 0.926829268292683,
+      "total_examples": 82
+    },
+    "singer": {
+      "exact_match_accuracy": 0.5,
+      "execution_match_accuracy": 0.9333333333333333,
+      "execution_success_rate": 0.9333333333333333,
+      "total_examples": 30
+    },
+    "real_estate_properties": {
+      "exact_match_accuracy": 0.25,
+      "execution_match_accuracy": 0.5,
+      "execution_success_rate": 1.0,
+      "total_examples": 4
+    }
+  },
+  "has_gold_sql": true,
+  "few_shot_config": {
+    "num_examples": 3,
+    "strategy": "hybrid",
+    "seed": 42
+  }
+}

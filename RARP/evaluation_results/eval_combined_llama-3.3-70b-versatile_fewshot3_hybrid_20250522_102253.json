@@ -1,0 +1,34 @@
+{
+  "model": "llama-3.3-70b-versatile",
+  "datasets": [
+    "dev.json"
+  ],
+  "few_shot_config": {
+    "num_examples": 3,
+    "strategy": "hybrid",
+    "seed": 42
+  },
+  "per_dataset_results": {
+    "dev.json": {
+      "exact_match_accuracy": 0.269825918762089,
+      "execution_match_accuracy": 0.7330754352030948,
+      "execution_success_rate": 0.9264990328820116,
+      "error_rate": 0.06866537717601548,
+      "average_time_per_query": 0.8298578469850109,
+      "total_examples": 1034
+    }
+  },
+  "overall_metrics": {
+    "total_examples": 1034,
+    "exact_match_count": 279,
+    "exec_match_count": 758,
+    "exec_success_count": 958,
+    "error_count": 71,
+    "total_time": 858.0730137825012,
+    "exact_match_accuracy": 0.269825918762089,
+    "execution_match_accuracy": 0.7330754352030948,
+    "execution_success_rate": 0.9264990328820116,
+    "error_rate": 0.06866537717601548,
+    "average_time_per_query": 0.8298578469850109
+  }
+}

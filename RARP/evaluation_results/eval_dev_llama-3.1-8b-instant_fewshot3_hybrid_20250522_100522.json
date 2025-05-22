@@ -1,0 +1,17 @@
+{
+  "model": "llama-3.1-8b-instant",
+  "dataset": "dev.json",
+  "total_examples": 0,
+  "exact_match_accuracy": 0,
+  "execution_match_accuracy": 0,
+  "execution_success_rate": 0,
+  "error_rate": 0,
+  "average_time_per_query": 0,
+  "total_time": 0,
+  "per_database_accuracy": {},
+  "few_shot_config": {
+    "num_examples": 3,
+    "strategy": "hybrid",
+    "seed": 42
+  }
+}
